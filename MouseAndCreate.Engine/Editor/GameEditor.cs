@@ -13,6 +13,11 @@ namespace MouseAndCreate.Editor
         const float CameraZoomStep = 0.1f;
         const float CameraMoveStep = 10.0f;
 
+        private bool _mouseMoveActive = false;
+        private Vector2 _mouseMoveStart = Vector2.Zero;
+
+        private bool _spaceDown = false;
+
         public GameEditor(GameSetup setup = null) : base(setup)
         {
             Camera.Offset = new Vector2(0, 0);
@@ -33,23 +38,70 @@ namespace MouseAndCreate.Editor
             Camera.Zoom += s * CameraZoomStep;
         }
 
-        protected override void KeyDown(Key key)
+        protected override void MouseButtonDown(Vector2 position, MouseButton button)
         {
-            if (key == Key.Left)
+            if (button == MouseButton.Left && _spaceDown && !_mouseMoveActive)
             {
-                Camera.Offset += new Vector2(-CameraMoveStep, 0);
+                _mouseMoveActive = true;
+                _mouseMoveStart = CurrentMousePos;
             }
-            else if (key == Key.Right)
+        }
+
+        protected override void MouseButtonUp(Vector2 position, MouseButton button)
+        {
+            if (button == MouseButton.Left && _mouseMoveActive)
             {
-                Camera.Offset += new Vector2(CameraMoveStep, 0);
+                _mouseMoveActive = false;
+                _mouseMoveStart = Vector2.Zero;
             }
-            else if (key == Key.Up)
+        }
+
+        protected override void KeyDown(Key key, KeyModifiers modifiers, bool isRepeat)
+        {
+            switch (key)
             {
-                Camera.Offset += new Vector2(0, CameraMoveStep);
+                case Key.Left:
+                    Camera.Offset += new Vector2(-CameraMoveStep, 0);
+                    break;
+
+                case Key.Right:
+                    Camera.Offset += new Vector2(CameraMoveStep, 0);
+                    break;
+
+                case Key.Up:
+                    Camera.Offset += new Vector2(0, CameraMoveStep);
+                    break;
+
+                case Key.Down:
+                    Camera.Offset += new Vector2(0, -CameraMoveStep);
+                    break;
+
+                case Key.Space:
+                    _spaceDown = true;
+                    break;
             }
-            else if (key == Key.Down)
+        }
+
+        protected override void KeyUp(Key key, KeyModifiers modifiers, bool wasRepeat)
+        {
+            switch (key)
             {
-                Camera.Offset += new Vector2(0, -CameraMoveStep);
+                case Key.Space:
+                    _spaceDown = false;
+                    break;
+            }
+        }
+
+        public override void Update(TimeSpan deltaTime)
+        {
+            if (_mouseMoveActive)
+            {
+                Vector2 deltaMove = CurrentMousePos - _mouseMoveStart;
+                if (deltaMove.LengthSquared > 0)
+                {
+                    Camera.Offset += new Vector2(deltaMove.X, -deltaMove.Y);
+                }
+                _mouseMoveStart = CurrentMousePos;
             }
         }
 

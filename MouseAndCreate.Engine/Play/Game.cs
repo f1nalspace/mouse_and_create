@@ -7,12 +7,16 @@ using MouseAndCreate.Textures;
 using MouseAndCreate.Types;
 using OpenTK.Mathematics;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace MouseAndCreate.Play;
 
-public class Game : IGame, IGameInputManager
+public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
     private readonly GameSetup _setup;
     private readonly IGameObjectManager _gameObjectManager;
     private readonly IFrameManager _frameManager;
@@ -28,6 +32,7 @@ public class Game : IGame, IGameInputManager
     public Guid ActiveFrameId { get => _activeFrameId; set => ChangeFrameById(value); }
     private Guid _activeFrameId = Guid.Empty;
     public event ActiveFrameChangedEventHandler ActiveFrameChanged;
+
     private IFrame _activeFrame = null;
     private readonly object _activeFrameLock = new object();
 
@@ -46,8 +51,13 @@ public class Game : IGame, IGameInputManager
         _renderer = rendererFactory.Create(setup.Renderer);
 
         _gameObjectManager = new GameObjectManager();
+
         _frameManager = new FrameManager(this);
+
         _camera = new Camera(setup.CameraSize);
+        _camera.Changed += delegate (ICamera camera) {
+            RaisePropertyChanged(nameof(Camera));
+        };
 
         _renderer.Init();
 
@@ -105,23 +115,23 @@ public class Game : IGame, IGameInputManager
         MouseWheel(position, offset);
     }
 
-    protected virtual void KeyDown(Key key) { }
-    void IKeyboardInputManager.KeyDown(Key key)
+    protected virtual void KeyDown(Key key, KeyModifiers modifiers, bool isRepeat) { }
+    void IKeyboardInputManager.KeyDown(Key key, KeyModifiers modifiers, bool isRepeat)
     {
         if (key != Key.None)
         {
-            Debug.WriteLine($"Key down: {key}");
-            KeyDown(key);
+            Debug.WriteLine($"Key down '{key}', mods: '{modifiers}', repeat: {(isRepeat ? "yes" : "no")}");
+            KeyDown(key, modifiers, isRepeat);
         }
     }
 
-    protected virtual void KeyUp(Key key) { }
-    void IKeyboardInputManager.KeyUp(Key key)
+    protected virtual void KeyUp(Key key, KeyModifiers modifiers, bool wasRepeat) { }
+    void IKeyboardInputManager.KeyUp(Key key, KeyModifiers modifiers, bool wasRepeat)
     {
         if (key != Key.None)
         {
-            Debug.WriteLine($"Key up: {key}");
-            KeyUp(key);
+            Debug.WriteLine($"Key up '{key}', mods: '{modifiers}', repeat: {(wasRepeat ? "yes" : "no")}");
+            KeyUp(key, modifiers, wasRepeat);
         }
     }
 

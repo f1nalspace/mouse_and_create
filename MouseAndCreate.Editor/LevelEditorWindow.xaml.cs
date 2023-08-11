@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using MouseAndCreate.Input;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using IK = MouseAndCreate.Input.Key;
-using WK = System.Windows.Input.Key;
+using WinKey = System.Windows.Input.Key;
+using WinMouseButton = System.Windows.Input.MouseButton;
 
 namespace MouseAndCreate.Editor
 {
@@ -50,132 +52,132 @@ namespace MouseAndCreate.Editor
             glControl.TextInput += OnGlControlTextInput;
         }
 
-        private static Input.MouseButton Translate(MouseButton button)
+        private static Input.MouseButton Translate(WinMouseButton button)
         {
             return button switch
             {
-                MouseButton.Left => Input.MouseButton.Left,
-                MouseButton.Middle => Input.MouseButton.Middle,
-                MouseButton.Right => Input.MouseButton.Right,
+                WinMouseButton.Left => Input.MouseButton.Left,
+                WinMouseButton.Middle => Input.MouseButton.Middle,
+                WinMouseButton.Right => Input.MouseButton.Right,
                 _ => Input.MouseButton.None
             };
         }
 
-        private static IK TranslateGeneric(WK key)
+        private static IK TranslateGeneric(WinKey key)
         {
             return key switch
             {
-                WK.Space => IK.Space,
-                WK.D0 => IK.D0,
-                WK.D1 => IK.D1,
-                WK.D2 => IK.D2,
-                WK.D3 => IK.D3,
-                WK.D4 => IK.D4,
-                WK.D5 => IK.D5,
-                WK.D6 => IK.D6,
-                WK.D7 => IK.D7,
-                WK.D8 => IK.D8,
-                WK.D9 => IK.D9,
-                WK.A => IK.A,
-                WK.B => IK.B,
-                WK.C => IK.C,
-                WK.D => IK.D,
-                WK.E => IK.E,
-                WK.F => IK.F,
-                WK.G => IK.G,
-                WK.H => IK.H,
-                WK.I => IK.I,
-                WK.J => IK.J,
-                WK.K => IK.K,
-                WK.L => IK.L,
-                WK.M => IK.M,
-                WK.N => IK.N,
-                WK.O => IK.O,
-                WK.P => IK.P,
-                WK.Q => IK.Q,
-                WK.R => IK.R,
-                WK.S => IK.S,
-                WK.T => IK.T,
-                WK.U => IK.U,
-                WK.V => IK.V,
-                WK.W => IK.W,
-                WK.X => IK.X,
-                WK.Y => IK.Y,
-                WK.Z => IK.Z,
-                WK.Escape => IK.Escape,
-                WK.Enter => IK.Enter,
-                WK.Tab => IK.Tab,
-                WK.Back => IK.Backspace,
-                WK.Insert => IK.Insert,
-                WK.Delete => IK.Delete,
-                WK.Right => IK.Right,
-                WK.Left => IK.Left,
-                WK.Down => IK.Down,
-                WK.Up => IK.Up,
-                WK.PageUp => IK.PageUp,
-                WK.PageDown => IK.PageDown,
-                WK.Home => IK.Home,
-                WK.End => IK.End,
-                WK.CapsLock => IK.CapsLock,
-                WK.Scroll => IK.ScrollLock,
-                WK.NumLock => IK.NumLock,
-                WK.PrintScreen => IK.PrintScreen,
-                WK.Pause => IK.Pause,
-                WK.F1 => IK.F1,
-                WK.F2 => IK.F2,
-                WK.F3 => IK.F3,
-                WK.F4 => IK.F4,
-                WK.F5 => IK.F5,
-                WK.F6 => IK.F6,
-                WK.F7 => IK.F7,
-                WK.F8 => IK.F8,
-                WK.F9 => IK.F9,
-                WK.F10 => IK.F10,
-                WK.F11 => IK.F11,
-                WK.F12 => IK.F12,
-                WK.F13 => IK.F13,
-                WK.F14 => IK.F14,
-                WK.F15 => IK.F15,
-                WK.F16 => IK.F16,
-                WK.F17 => IK.F17,
-                WK.F18 => IK.F18,
-                WK.F19 => IK.F19,
-                WK.F20 => IK.F20,
-                WK.F21 => IK.F21,
-                WK.F22 => IK.F22,
-                WK.F23 => IK.F23,
-                WK.F24 => IK.F24,
-                WK.NumPad0 => IK.NumPad0,
-                WK.NumPad1 => IK.NumPad1,
-                WK.NumPad2 => IK.NumPad2,
-                WK.NumPad3 => IK.NumPad3,
-                WK.NumPad4 => IK.NumPad4,
-                WK.NumPad5 => IK.NumPad5,
-                WK.NumPad6 => IK.NumPad6,
-                WK.NumPad7 => IK.NumPad7,
-                WK.NumPad8 => IK.NumPad8,
-                WK.NumPad9 => IK.NumPad9,
-                WK.Decimal => IK.NumPadDecimal,
-                WK.Divide => IK.NumPadDivide,
-                WK.Multiply => IK.NumPadMultiply,
-                WK.Subtract => IK.NumPadSubstract,
-                WK.Add => IK.NumPadAdd,
+                WinKey.Space => IK.Space,
+                WinKey.D0 => IK.D0,
+                WinKey.D1 => IK.D1,
+                WinKey.D2 => IK.D2,
+                WinKey.D3 => IK.D3,
+                WinKey.D4 => IK.D4,
+                WinKey.D5 => IK.D5,
+                WinKey.D6 => IK.D6,
+                WinKey.D7 => IK.D7,
+                WinKey.D8 => IK.D8,
+                WinKey.D9 => IK.D9,
+                WinKey.A => IK.A,
+                WinKey.B => IK.B,
+                WinKey.C => IK.C,
+                WinKey.D => IK.D,
+                WinKey.E => IK.E,
+                WinKey.F => IK.F,
+                WinKey.G => IK.G,
+                WinKey.H => IK.H,
+                WinKey.I => IK.I,
+                WinKey.J => IK.J,
+                WinKey.K => IK.K,
+                WinKey.L => IK.L,
+                WinKey.M => IK.M,
+                WinKey.N => IK.N,
+                WinKey.O => IK.O,
+                WinKey.P => IK.P,
+                WinKey.Q => IK.Q,
+                WinKey.R => IK.R,
+                WinKey.S => IK.S,
+                WinKey.T => IK.T,
+                WinKey.U => IK.U,
+                WinKey.V => IK.V,
+                WinKey.W => IK.W,
+                WinKey.X => IK.X,
+                WinKey.Y => IK.Y,
+                WinKey.Z => IK.Z,
+                WinKey.Escape => IK.Escape,
+                WinKey.Enter => IK.Enter,
+                WinKey.Tab => IK.Tab,
+                WinKey.Back => IK.Backspace,
+                WinKey.Insert => IK.Insert,
+                WinKey.Delete => IK.Delete,
+                WinKey.Right => IK.Right,
+                WinKey.Left => IK.Left,
+                WinKey.Down => IK.Down,
+                WinKey.Up => IK.Up,
+                WinKey.PageUp => IK.PageUp,
+                WinKey.PageDown => IK.PageDown,
+                WinKey.Home => IK.Home,
+                WinKey.End => IK.End,
+                WinKey.CapsLock => IK.CapsLock,
+                WinKey.Scroll => IK.ScrollLock,
+                WinKey.NumLock => IK.NumLock,
+                WinKey.PrintScreen => IK.PrintScreen,
+                WinKey.Pause => IK.Pause,
+                WinKey.F1 => IK.F1,
+                WinKey.F2 => IK.F2,
+                WinKey.F3 => IK.F3,
+                WinKey.F4 => IK.F4,
+                WinKey.F5 => IK.F5,
+                WinKey.F6 => IK.F6,
+                WinKey.F7 => IK.F7,
+                WinKey.F8 => IK.F8,
+                WinKey.F9 => IK.F9,
+                WinKey.F10 => IK.F10,
+                WinKey.F11 => IK.F11,
+                WinKey.F12 => IK.F12,
+                WinKey.F13 => IK.F13,
+                WinKey.F14 => IK.F14,
+                WinKey.F15 => IK.F15,
+                WinKey.F16 => IK.F16,
+                WinKey.F17 => IK.F17,
+                WinKey.F18 => IK.F18,
+                WinKey.F19 => IK.F19,
+                WinKey.F20 => IK.F20,
+                WinKey.F21 => IK.F21,
+                WinKey.F22 => IK.F22,
+                WinKey.F23 => IK.F23,
+                WinKey.F24 => IK.F24,
+                WinKey.NumPad0 => IK.NumPad0,
+                WinKey.NumPad1 => IK.NumPad1,
+                WinKey.NumPad2 => IK.NumPad2,
+                WinKey.NumPad3 => IK.NumPad3,
+                WinKey.NumPad4 => IK.NumPad4,
+                WinKey.NumPad5 => IK.NumPad5,
+                WinKey.NumPad6 => IK.NumPad6,
+                WinKey.NumPad7 => IK.NumPad7,
+                WinKey.NumPad8 => IK.NumPad8,
+                WinKey.NumPad9 => IK.NumPad9,
+                WinKey.Decimal => IK.NumPadDecimal,
+                WinKey.Divide => IK.NumPadDivide,
+                WinKey.Multiply => IK.NumPadMultiply,
+                WinKey.Subtract => IK.NumPadSubstract,
+                WinKey.Add => IK.NumPadAdd,
                 // TODO(final): Keypad-Return to IK.NumPadReturn
                 // TODO(final): Keypad-Equal to IK.NumPadEqual
-                WK.LeftShift => IK.LeftShift,
-                WK.LeftCtrl => IK.LeftControl,
-                WK.LeftAlt => IK.LeftAlt,
-                WK.LWin => IK.LeftSuper,
-                WK.RightShift => IK.RightShift,
-                WK.RightCtrl => IK.RightControl,
-                WK.RightAlt => IK.RightAlt,
-                WK.RWin => IK.RightSuper,
+                WinKey.LeftShift => IK.LeftShift,
+                WinKey.LeftCtrl => IK.LeftControl,
+                WinKey.LeftAlt => IK.LeftAlt,
+                WinKey.LWin => IK.LeftSuper,
+                WinKey.RightShift => IK.RightShift,
+                WinKey.RightCtrl => IK.RightControl,
+                WinKey.RightAlt => IK.RightAlt,
+                WinKey.RWin => IK.RightSuper,
                 // TODO(final): Win 'menu' to WinMenu
                 _ => IK.None,
             };
         }
 
-        private static IK TranslateUS(WK key)
+        private static IK TranslateUS(WinKey key)
         {
             IK result = TranslateGeneric(key);
             if (result == IK.None)
@@ -203,7 +205,7 @@ namespace MouseAndCreate.Editor
             _viewModel.GameMouseWheel(new Vector2((float)pos.X, (float)pos.Y), new Vector2(0, e.Delta));
         }
 
-        private static string KeyToString(WK key)
+        private static string KeyToString(WinKey key)
         {
             try
             {
@@ -215,13 +217,23 @@ namespace MouseAndCreate.Editor
             }
         }
 
+        private static KeyModifiers TranslateModifiers(ModifierKeys keys)
+        {
+            KeyModifiers result = KeyModifiers.None;
+            if (keys.HasFlag(ModifierKeys.Alt)) result |= KeyModifiers.Alt;
+            if (keys.HasFlag(ModifierKeys.Control)) result |= KeyModifiers.Ctrl;
+            if (keys.HasFlag(ModifierKeys.Shift)) result |= KeyModifiers.Shift;
+            return result;
+        }
+
         private void OnGlControlKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
             IK k = TranslateUS(e.Key);
             if (k == IK.None)
                 Debug.WriteLine($"Unknown key '{KeyToString(e.Key)}' for press");
-            _viewModel.GameKeyDown(k);
+            KeyModifiers modifiers = TranslateModifiers(e.KeyboardDevice.Modifiers);
+            _viewModel.GameKeyDown(k, modifiers, e.IsRepeat);
         }
 
         private void OnGlControlKeyUp(object sender, KeyEventArgs e)
@@ -230,7 +242,8 @@ namespace MouseAndCreate.Editor
             IK k = TranslateUS(e.Key);
             if (k == IK.None)
                 Debug.WriteLine($"Unknown key '{KeyToString(e.Key)}' for release");
-            _viewModel.GameKeyUp(k);
+            KeyModifiers modifiers = TranslateModifiers(e.KeyboardDevice.Modifiers);
+            _viewModel.GameKeyUp(k, modifiers, e.IsRepeat);
         }
 
         private void OnGlControlTextInput(object sender, TextCompositionEventArgs e)
@@ -261,7 +274,7 @@ namespace MouseAndCreate.Editor
 
         private void OnGlControlRender(TimeSpan deltaTime)
         {
-            _viewModel.GameRender(deltaTime);
+            _viewModel.GameUpdateAndRender(deltaTime);
         }
     }
 }

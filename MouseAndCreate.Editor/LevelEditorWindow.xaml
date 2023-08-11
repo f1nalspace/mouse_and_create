@@ -70,8 +70,11 @@
             <StatusBarItem Content="Object: " />
             <StatusBarItem Content="-" />
             <Separator />
-            <StatusBarItem Content="Camera: " />
-            <StatusBarItem Content="{Binding CameraInfo, UpdateSourceTrigger=PropertyChanged}" />
+            <StatusBarItem Content="Size: " />
+            <StatusBarItem Content="{Binding Editor.Camera.Size, UpdateSourceTrigger=PropertyChanged}" />
+            <Separator />
+            <StatusBarItem Content="Zoom: " />
+            <StatusBarItem Content="{Binding Editor.Camera.Zoom, UpdateSourceTrigger=PropertyChanged}" />
         </StatusBar>
     </Grid>
 </Window>

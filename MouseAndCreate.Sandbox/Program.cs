@@ -154,6 +154,15 @@ class Program
         return result;
     }
 
+    static KeyModifiers GetModifiers(KeyboardKeyEventArgs args)
+    {
+        KeyModifiers result = KeyModifiers.None;
+        if (args.Alt) result |= KeyModifiers.Alt;
+        if (args.Control) result |= KeyModifiers.Ctrl;
+        if (args.Shift) result |= KeyModifiers.Shift;
+        return result;
+    }
+
     static void Main(string[] args)
     {
         GameSetup setup = new GameSetup(new Vector2i(1280, 720));
@@ -203,14 +212,16 @@ class Program
             IK k = TranslateUS(args.Key);
             if (k == IK.None)
                 Debug.WriteLine($"Unknown key '{args.Key}' for press");
-            _inputMng.KeyDown(k);
+            KeyModifiers modifiers = GetModifiers(args);
+            _inputMng.KeyDown(k, modifiers, args.IsRepeat);
         };
         window.KeyUp += delegate (KeyboardKeyEventArgs args)
         {
             IK k = TranslateUS(args.Key);
             if (k == IK.None)
                 Debug.WriteLine($"Unknown key '{args.Key}' for release");
-            _inputMng.KeyUp(k);
+            KeyModifiers modifiers = GetModifiers(args);
+            _inputMng.KeyUp(k, modifiers, args.IsRepeat);
         };
 
         window.Run();

@@ -63,10 +63,13 @@ public class MainViewModel : ViewModelBase
             _gameInputMng.MouseMove(mousePos);
     }
 
-    public void GameRender(TimeSpan deltaTime)
+    public void GameUpdateAndRender(TimeSpan deltaTime)
     {
         if (Editor is not null)
+        {
+            Editor.Update(deltaTime);
             Editor.Render(deltaTime);
+        }
     }
 
     public void GameResize(Vector2i size)
@@ -111,16 +114,16 @@ public class MainViewModel : ViewModelBase
             _gameInputMng.MouseWheel(position, offset);
     }
 
-    public void GameKeyDown(Key key)
+    public void GameKeyDown(Key key, KeyModifiers modifiers, bool isRepeat)
     {
         if (_gameInputMng is not null)
-            _gameInputMng.KeyDown(key);
+            _gameInputMng.KeyDown(key, modifiers, isRepeat);
     }
 
-    public void GameKeyUp(Key key)
+    public void GameKeyUp(Key key, KeyModifiers modifiers, bool wasRepeat)
     {
         if (_gameInputMng is not null)
-            _gameInputMng.KeyUp(key);
+            _gameInputMng.KeyUp(key, modifiers, wasRepeat);
     }
 
     public void GameKeyInput(string input)

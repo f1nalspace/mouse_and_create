@@ -58,7 +58,11 @@
             </RibbonTab>
         </Ribbon>
         <Grid x:Name="glGrid" Grid.Row="1">
-            <glWpfControl:GLWpfControl x:Name="glControl" />
+            <glWpfControl:GLWpfControl x:Name="glControl">
+                <dxmvvm:Interaction.Behaviors>
+                    <local:GLControlServiceBehavior />
+                </dxmvvm:Interaction.Behaviors>
+            </glWpfControl:GLWpfControl>
         </Grid>
         <StatusBar Grid.Row="2">
             <StatusBarItem Content="Position: " />

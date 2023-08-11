@@ -1,6 +1,7 @@
 ﻿using MouseAndCreate.Buffers;
 using MouseAndCreate.Play;
 using MouseAndCreate.Shaders;
+using MouseAndCreate.Types;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
@@ -86,6 +87,10 @@ namespace MouseAndCreate.Rendering.OpenGL
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcColor, BlendingFactor.OneMinusSrcAlpha);
 
+            GL.Enable(EnableCap.LineSmooth);
+
+            GL.LineWidth(1);
+
             // Quad texture
             {
                 IShader shader = _quadShaderTexture = LoadShader(QuadShaderTexture.Name, QuadShaderTexture.Vertex, QuadShaderTexture.Fragment);
@@ -119,7 +124,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             // Line
             {
-                _lineShader = LoadShader(LineShader.Name, LineShader.Vertex, LineShader.Fragment, LineShader.Geometry);
+                _lineShader = LoadShader(LineShader.Name, LineShader.Vertex, LineShader.Fragment);
 
                 int positionAttribLocation = _lineShader.GetAttribLocation("aPosition");
 
@@ -231,15 +236,12 @@ namespace MouseAndCreate.Rendering.OpenGL
             texture.Unbind();
         }
 
-        public void DrawLine(Matrix4 viewProjection, Vector3 p0, Vector3 p1, float thickness, Color4 color)
+        public void DrawLine(Matrix4 viewProjection, Vector3 p0, Vector3 p1, float thickness, Color4 color, LinePattern pattern = LinePattern.Solid, float stippleFactor = 2.0f)
         {
             float[] vertices = new float[] { p0.X, p0.Y, p0.Z, p1.X, p1.Y, p1.Z };
             _lineBufferOne.UpdateVertices(0, vertices.Length, vertices);
 
             _lineShader.Bind();
-
-            int thicknessLocation = _lineShader.GetUniformLocation("uThickness");
-            GL.Uniform1(thicknessLocation, thickness);
 
             int viewportLocation = _lineShader.GetUniformLocation("uViewport");
             GL.Uniform2(viewportLocation, _viewportSize);
@@ -247,11 +249,19 @@ namespace MouseAndCreate.Rendering.OpenGL
             int colorLocation = _lineShader.GetUniformLocation("uColor");
             GL.Uniform4(colorLocation, color);
 
+            int patternLocation = _lineShader.GetUniformLocation("uPattern");
+            GL.Uniform1(patternLocation, (uint)pattern);
+
+            int factorLocation = _lineShader.GetUniformLocation("uFactor");
+            GL.Uniform1(factorLocation, stippleFactor);
+
             int viewProjectionLocation = _lineShader.GetUniformLocation("uViewProjectionMat");
             GL.UniformMatrix4(viewProjectionLocation, true, ref viewProjection);
 
             _lineVAOne.Bind();
+            GL.LineWidth(thickness);
             GL.DrawArrays(PrimitiveType.Lines, 0, vertices.Length);
+            GL.LineWidth(1);
             _lineVAOne.Unbind();
 
             _lineShader.Unbind();

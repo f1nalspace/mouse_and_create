@@ -1,6 +1,7 @@
 ﻿using System;
 using MouseAndCreate.Configurations;
 using MouseAndCreate.Frames;
+using MouseAndCreate.Input;
 using MouseAndCreate.Objects;
 using OpenTK.Mathematics;
 
@@ -14,6 +15,7 @@ public interface IGame : IDisposable
     IFrameManager Frames { get; }
     IGameObjectManager Objects { get; }
     ICamera Camera { get; }
+    InputState InputState { get; }
 
     Vector2i WindowSize { get; }
     Vector2 CurrentMousePos { get; }

@@ -163,6 +163,18 @@ class Program
         return result;
     }
 
+    class GameWindowInputQuery : IInputQuery
+    {
+        private readonly GameWindow _window;
+
+        public GameWindowInputQuery(GameWindow window) 
+        {
+            _window = window;
+        }
+
+        public Vector2 GetMousePosition() => _window.MousePosition;
+    }
+
     static void Main(string[] args)
     {
         GameSetup setup = new GameSetup(new Vector2i(1280, 720));
@@ -172,6 +184,8 @@ class Program
             Title = setup.Title,
             Size = setup.WindowSize,
         });
+
+        GameWindowInputQuery inputQuery = new GameWindowInputQuery(window);
 
         window.Resize += delegate (ResizeEventArgs args) { _game.Resize(args.Size); };
 
@@ -188,7 +202,7 @@ class Program
 
         window.Load += delegate ()
         {
-            _game = new Game();
+            _game = new Game(inputQuery);
             IFrame frame = _game.Frames.AddFrame();
             _game.ActiveFrameId = frame.Id;
             _inputMng = _game as IGameInputManager;

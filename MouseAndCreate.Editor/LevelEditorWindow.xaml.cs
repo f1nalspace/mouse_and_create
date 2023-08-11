@@ -16,7 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using IK = MouseAndCreate.Input.Key;
+using IKey = MouseAndCreate.Input.Key;
+using IMB = MouseAndCreate.Input.MouseButton;
 using WinKey = System.Windows.Input.Key;
 using WinMouseButton = System.Windows.Input.MouseButton;
 
@@ -52,135 +53,135 @@ namespace MouseAndCreate.Editor
             glControl.TextInput += OnGlControlTextInput;
         }
 
-        private static Input.MouseButton Translate(WinMouseButton button)
+        private static IMB Translate(WinMouseButton button)
         {
             return button switch
             {
-                WinMouseButton.Left => Input.MouseButton.Left,
-                WinMouseButton.Middle => Input.MouseButton.Middle,
-                WinMouseButton.Right => Input.MouseButton.Right,
-                _ => Input.MouseButton.None
+                WinMouseButton.Left => IMB.Left,
+                WinMouseButton.Middle => IMB.Middle,
+                WinMouseButton.Right => IMB.Right,
+                _ => IMB.None
             };
         }
 
-        private static IK TranslateGeneric(WinKey key)
+        private static IKey TranslateGeneric(WinKey key)
         {
             return key switch
             {
-                WinKey.Space => IK.Space,
-                WinKey.D0 => IK.D0,
-                WinKey.D1 => IK.D1,
-                WinKey.D2 => IK.D2,
-                WinKey.D3 => IK.D3,
-                WinKey.D4 => IK.D4,
-                WinKey.D5 => IK.D5,
-                WinKey.D6 => IK.D6,
-                WinKey.D7 => IK.D7,
-                WinKey.D8 => IK.D8,
-                WinKey.D9 => IK.D9,
-                WinKey.A => IK.A,
-                WinKey.B => IK.B,
-                WinKey.C => IK.C,
-                WinKey.D => IK.D,
-                WinKey.E => IK.E,
-                WinKey.F => IK.F,
-                WinKey.G => IK.G,
-                WinKey.H => IK.H,
-                WinKey.I => IK.I,
-                WinKey.J => IK.J,
-                WinKey.K => IK.K,
-                WinKey.L => IK.L,
-                WinKey.M => IK.M,
-                WinKey.N => IK.N,
-                WinKey.O => IK.O,
-                WinKey.P => IK.P,
-                WinKey.Q => IK.Q,
-                WinKey.R => IK.R,
-                WinKey.S => IK.S,
-                WinKey.T => IK.T,
-                WinKey.U => IK.U,
-                WinKey.V => IK.V,
-                WinKey.W => IK.W,
-                WinKey.X => IK.X,
-                WinKey.Y => IK.Y,
-                WinKey.Z => IK.Z,
-                WinKey.Escape => IK.Escape,
-                WinKey.Enter => IK.Enter,
-                WinKey.Tab => IK.Tab,
-                WinKey.Back => IK.Backspace,
-                WinKey.Insert => IK.Insert,
-                WinKey.Delete => IK.Delete,
-                WinKey.Right => IK.Right,
-                WinKey.Left => IK.Left,
-                WinKey.Down => IK.Down,
-                WinKey.Up => IK.Up,
-                WinKey.PageUp => IK.PageUp,
-                WinKey.PageDown => IK.PageDown,
-                WinKey.Home => IK.Home,
-                WinKey.End => IK.End,
-                WinKey.CapsLock => IK.CapsLock,
-                WinKey.Scroll => IK.ScrollLock,
-                WinKey.NumLock => IK.NumLock,
-                WinKey.PrintScreen => IK.PrintScreen,
-                WinKey.Pause => IK.Pause,
-                WinKey.F1 => IK.F1,
-                WinKey.F2 => IK.F2,
-                WinKey.F3 => IK.F3,
-                WinKey.F4 => IK.F4,
-                WinKey.F5 => IK.F5,
-                WinKey.F6 => IK.F6,
-                WinKey.F7 => IK.F7,
-                WinKey.F8 => IK.F8,
-                WinKey.F9 => IK.F9,
-                WinKey.F10 => IK.F10,
-                WinKey.F11 => IK.F11,
-                WinKey.F12 => IK.F12,
-                WinKey.F13 => IK.F13,
-                WinKey.F14 => IK.F14,
-                WinKey.F15 => IK.F15,
-                WinKey.F16 => IK.F16,
-                WinKey.F17 => IK.F17,
-                WinKey.F18 => IK.F18,
-                WinKey.F19 => IK.F19,
-                WinKey.F20 => IK.F20,
-                WinKey.F21 => IK.F21,
-                WinKey.F22 => IK.F22,
-                WinKey.F23 => IK.F23,
-                WinKey.F24 => IK.F24,
-                WinKey.NumPad0 => IK.NumPad0,
-                WinKey.NumPad1 => IK.NumPad1,
-                WinKey.NumPad2 => IK.NumPad2,
-                WinKey.NumPad3 => IK.NumPad3,
-                WinKey.NumPad4 => IK.NumPad4,
-                WinKey.NumPad5 => IK.NumPad5,
-                WinKey.NumPad6 => IK.NumPad6,
-                WinKey.NumPad7 => IK.NumPad7,
-                WinKey.NumPad8 => IK.NumPad8,
-                WinKey.NumPad9 => IK.NumPad9,
-                WinKey.Decimal => IK.NumPadDecimal,
-                WinKey.Divide => IK.NumPadDivide,
-                WinKey.Multiply => IK.NumPadMultiply,
-                WinKey.Subtract => IK.NumPadSubstract,
-                WinKey.Add => IK.NumPadAdd,
-                // TODO(final): Keypad-Return to IK.NumPadReturn
-                // TODO(final): Keypad-Equal to IK.NumPadEqual
-                WinKey.LeftShift => IK.LeftShift,
-                WinKey.LeftCtrl => IK.LeftControl,
-                WinKey.LeftAlt => IK.LeftAlt,
-                WinKey.LWin => IK.LeftSuper,
-                WinKey.RightShift => IK.RightShift,
-                WinKey.RightCtrl => IK.RightControl,
-                WinKey.RightAlt => IK.RightAlt,
-                WinKey.RWin => IK.RightSuper,
+                WinKey.Space => IKey.Space,
+                WinKey.D0 => IKey.D0,
+                WinKey.D1 => IKey.D1,
+                WinKey.D2 => IKey.D2,
+                WinKey.D3 => IKey.D3,
+                WinKey.D4 => IKey.D4,
+                WinKey.D5 => IKey.D5,
+                WinKey.D6 => IKey.D6,
+                WinKey.D7 => IKey.D7,
+                WinKey.D8 => IKey.D8,
+                WinKey.D9 => IKey.D9,
+                WinKey.A => IKey.A,
+                WinKey.B => IKey.B,
+                WinKey.C => IKey.C,
+                WinKey.D => IKey.D,
+                WinKey.E => IKey.E,
+                WinKey.F => IKey.F,
+                WinKey.G => IKey.G,
+                WinKey.H => IKey.H,
+                WinKey.I => IKey.I,
+                WinKey.J => IKey.J,
+                WinKey.K => IKey.K,
+                WinKey.L => IKey.L,
+                WinKey.M => IKey.M,
+                WinKey.N => IKey.N,
+                WinKey.O => IKey.O,
+                WinKey.P => IKey.P,
+                WinKey.Q => IKey.Q,
+                WinKey.R => IKey.R,
+                WinKey.S => IKey.S,
+                WinKey.T => IKey.T,
+                WinKey.U => IKey.U,
+                WinKey.V => IKey.V,
+                WinKey.W => IKey.W,
+                WinKey.X => IKey.X,
+                WinKey.Y => IKey.Y,
+                WinKey.Z => IKey.Z,
+                WinKey.Escape => IKey.Escape,
+                WinKey.Enter => IKey.Enter,
+                WinKey.Tab => IKey.Tab,
+                WinKey.Back => IKey.Backspace,
+                WinKey.Insert => IKey.Insert,
+                WinKey.Delete => IKey.Delete,
+                WinKey.Right => IKey.Right,
+                WinKey.Left => IKey.Left,
+                WinKey.Down => IKey.Down,
+                WinKey.Up => IKey.Up,
+                WinKey.PageUp => IKey.PageUp,
+                WinKey.PageDown => IKey.PageDown,
+                WinKey.Home => IKey.Home,
+                WinKey.End => IKey.End,
+                WinKey.CapsLock => IKey.CapsLock,
+                WinKey.Scroll => IKey.ScrollLock,
+                WinKey.NumLock => IKey.NumLock,
+                WinKey.PrintScreen => IKey.PrintScreen,
+                WinKey.Pause => IKey.Pause,
+                WinKey.F1 => IKey.F1,
+                WinKey.F2 => IKey.F2,
+                WinKey.F3 => IKey.F3,
+                WinKey.F4 => IKey.F4,
+                WinKey.F5 => IKey.F5,
+                WinKey.F6 => IKey.F6,
+                WinKey.F7 => IKey.F7,
+                WinKey.F8 => IKey.F8,
+                WinKey.F9 => IKey.F9,
+                WinKey.F10 => IKey.F10,
+                WinKey.F11 => IKey.F11,
+                WinKey.F12 => IKey.F12,
+                WinKey.F13 => IKey.F13,
+                WinKey.F14 => IKey.F14,
+                WinKey.F15 => IKey.F15,
+                WinKey.F16 => IKey.F16,
+                WinKey.F17 => IKey.F17,
+                WinKey.F18 => IKey.F18,
+                WinKey.F19 => IKey.F19,
+                WinKey.F20 => IKey.F20,
+                WinKey.F21 => IKey.F21,
+                WinKey.F22 => IKey.F22,
+                WinKey.F23 => IKey.F23,
+                WinKey.F24 => IKey.F24,
+                WinKey.NumPad0 => IKey.NumPad0,
+                WinKey.NumPad1 => IKey.NumPad1,
+                WinKey.NumPad2 => IKey.NumPad2,
+                WinKey.NumPad3 => IKey.NumPad3,
+                WinKey.NumPad4 => IKey.NumPad4,
+                WinKey.NumPad5 => IKey.NumPad5,
+                WinKey.NumPad6 => IKey.NumPad6,
+                WinKey.NumPad7 => IKey.NumPad7,
+                WinKey.NumPad8 => IKey.NumPad8,
+                WinKey.NumPad9 => IKey.NumPad9,
+                WinKey.Decimal => IKey.NumPadDecimal,
+                WinKey.Divide => IKey.NumPadDivide,
+                WinKey.Multiply => IKey.NumPadMultiply,
+                WinKey.Subtract => IKey.NumPadSubstract,
+                WinKey.Add => IKey.NumPadAdd,
+                // TODO(final): Keypad-Return to IKey.NumPadReturn
+                // TODO(final): Keypad-Equal to IKey.NumPadEqual
+                WinKey.LeftShift => IKey.LeftShift,
+                WinKey.LeftCtrl => IKey.LeftControl,
+                WinKey.LeftAlt => IKey.LeftAlt,
+                WinKey.LWin => IKey.LeftSuper,
+                WinKey.RightShift => IKey.RightShift,
+                WinKey.RightCtrl => IKey.RightControl,
+                WinKey.RightAlt => IKey.RightAlt,
+                WinKey.RWin => IKey.RightSuper,
                 // TODO(final): Win 'menu' to WinMenu
-                _ => IK.None,
+                _ => IKey.None,
             };
         }
 
-        private static IK TranslateUS(WinKey key)
+        private static IKey TranslateUS(WinKey key)
         {
-            IK result = TranslateGeneric(key);
-            if (result == IK.None)
+            IKey result = TranslateGeneric(key);
+            if (result == IKey.None)
             {
                 // TODO(final): WPF US-Keyboard mapping!
             }
@@ -229,8 +230,8 @@ namespace MouseAndCreate.Editor
         private void OnGlControlKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
-            IK k = TranslateUS(e.Key);
-            if (k == IK.None)
+            IKey k = TranslateUS(e.Key);
+            if (k == IKey.None)
                 Debug.WriteLine($"Unknown key '{KeyToString(e.Key)}' for press");
             KeyModifiers modifiers = TranslateModifiers(e.KeyboardDevice.Modifiers);
             _viewModel.GameKeyDown(k, modifiers, e.IsRepeat);
@@ -239,8 +240,8 @@ namespace MouseAndCreate.Editor
         private void OnGlControlKeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
-            IK k = TranslateUS(e.Key);
-            if (k == IK.None)
+            IKey k = TranslateUS(e.Key);
+            if (k == IKey.None)
                 Debug.WriteLine($"Unknown key '{KeyToString(e.Key)}' for release");
             KeyModifiers modifiers = TranslateModifiers(e.KeyboardDevice.Modifiers);
             _viewModel.GameKeyUp(k, modifiers, e.IsRepeat);

@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Remove="Shaders\shader_line.frag" />
-    <None Remove="Shaders\shader_line.geom" />
     <None Remove="Shaders\shader_line.vert" />
     <None Remove="Shaders\shader_quad_color.frag" />
     <None Remove="Shaders\shader_quad_color.vert" />
@@ -27,7 +26,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Shaders\shader_line.frag" />
-    <EmbeddedResource Include="Shaders\shader_line.geom" />
     <EmbeddedResource Include="Shaders\shader_line.vert" />
     <EmbeddedResource Include="Shaders\shader_quad_color.frag" />
     <EmbeddedResource Include="Shaders\shader_quad_color.vert" />

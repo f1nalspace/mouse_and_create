@@ -19,7 +19,7 @@ namespace MouseAndCreate.Rendering
         void Clear(Color4 clearColor);
         void DrawQuad(Matrix4 viewProjection, Vector3 translation, Vector3 scale, Color4 color);
         void DrawQuad(Matrix4 viewProjection, Vector3 translation, Vector3 scale, ITexture texture, Color4? color = null, Vector4? uvAdjustment = null);
-        void DrawLine(Matrix4 viewProjection, Vector3 p0, Vector3 p1, float thickness, Color4 color);
+        void DrawLine(Matrix4 viewProjection, Vector3 p0, Vector3 p1, float thickness, Color4 color, LinePattern pattern = LinePattern.Solid, float stippleFactor = 2.0f);
         void DrawRectangle(Matrix4 viewProjection, Vector3 translation, Vector3 scale, float thickness, Color4 color);
         void CheckForErrors();
     }

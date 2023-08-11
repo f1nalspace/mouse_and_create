@@ -18,7 +18,7 @@ namespace MouseAndCreate.Editor
 
         private bool _spaceDown = false;
 
-        public GameEditor(GameSetup setup = null) : base(setup)
+        public GameEditor(IInputQuery inputQuery, GameSetup setup = null) : base(inputQuery, setup)
         {
             Camera.Offset = new Vector2(0, 0);
             Camera.Scale = new Vector2(1, 1);

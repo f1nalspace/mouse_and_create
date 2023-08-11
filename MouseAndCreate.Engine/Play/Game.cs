@@ -21,13 +21,17 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     private readonly IGameObjectManager _gameObjectManager;
     private readonly IFrameManager _frameManager;
     private readonly ICamera _camera;
+    private readonly InputState _inputState;
 
     protected readonly IRenderer _renderer;
+
+    private readonly IInputQuery _inputQuery;
 
     public GameSetup Setup => _setup;
     public IGameObjectManager Objects => _gameObjectManager;
     public IFrameManager Frames => _frameManager;
     public ICamera Camera => _camera;
+    public InputState InputState => _inputState;
 
     public Guid ActiveFrameId { get => _activeFrameId; set => ChangeFrameById(value); }
     private Guid _activeFrameId = Guid.Empty;
@@ -43,8 +47,11 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     protected ITexture _mouseArrowTexture = null;
     protected ITexture _testTexture = null;
 
-    public Game(GameSetup setup = null)
+    public Game(IInputQuery inputQuery, GameSetup setup = null)
     {
+        if (inputQuery is null)
+            throw new ArgumentNullException(nameof(inputQuery));
+
         _setup = (setup ??= GameSetup.Default);
 
         IRendererFactory rendererFactory = new RendererFactory();
@@ -58,6 +65,10 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _camera.Changed += delegate (ICamera camera) {
             RaisePropertyChanged(nameof(Camera));
         };
+
+        _inputQuery = inputQuery;
+
+        _inputState = new InputState();
 
         _renderer.Init();
 

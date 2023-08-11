@@ -29,7 +29,11 @@ public class MainViewModel : ViewModelBase
 
     private void OnWindowLoaded()
     {
-        Editor = new GameEditor();
+        IControlInputQueryService inputQueryService = GetService<IControlInputQueryService>();
+        if (inputQueryService is null)
+            throw new Exception("Input query service not registered!");
+
+        Editor = new GameEditor(inputQueryService);
         CameraInfo = Editor.Camera.ToString();
         Editor.Camera.Changed += OnEditorCameraChanged;
 

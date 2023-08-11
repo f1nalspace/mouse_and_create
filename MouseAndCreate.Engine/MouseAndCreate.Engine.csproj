@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>MouseAndCreate</RootNamespace>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Shaders\shader_line.frag" />
+    <None Remove="Shaders\shader_line.geom" />
+    <None Remove="Shaders\shader_line.vert" />
+    <None Remove="Shaders\shader_quad_color.frag" />
+    <None Remove="Shaders\shader_quad_color.vert" />
+    <None Remove="Shaders\shader_quad_texture.frag" />
+    <None Remove="Shaders\shader_quad_texture.vert" />
+    <None Remove="Textures\blue_texture.png" />
+    <None Remove="Textures\green_texture.png" />
+    <None Remove="Textures\mouse_arrow.png" />
+    <None Remove="Textures\opengl_test_texture.png" />
+    <None Remove="Textures\red_texture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Textures\mouse_arrow.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Shaders\shader_line.frag" />
+    <EmbeddedResource Include="Shaders\shader_line.geom" />
+    <EmbeddedResource Include="Shaders\shader_line.vert" />
+    <EmbeddedResource Include="Shaders\shader_quad_color.frag" />
+    <EmbeddedResource Include="Shaders\shader_quad_color.vert" />
+    <EmbeddedResource Include="Shaders\shader_quad_texture.frag" />
+    <EmbeddedResource Include="Shaders\shader_quad_texture.vert" />
+    <EmbeddedResource Include="Textures\opengl_test_texture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK.Core" Version="4.3.0" />
+    <PackageReference Include="OpenTK.Graphics" Version="4.3.0" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.3.0" />
+    <PackageReference Include="OpenTK.Input" Version="4.3.0" />
+    <PackageReference Include="StbImageSharp" Version="2.27.13" />
+    <PackageReference Include="StbTrueTypeSharp" Version="1.26.11" />
+  </ItemGroup>
+
+</Project>

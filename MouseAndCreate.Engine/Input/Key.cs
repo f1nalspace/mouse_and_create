@@ -156,5 +156,7 @@
         RightAlt = 0xA5,
 
         // 0xA6-0xFF: Dont care
+
+        Last = 0xFF
     }
 }

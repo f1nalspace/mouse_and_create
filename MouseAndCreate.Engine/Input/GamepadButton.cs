@@ -3,9 +3,9 @@
     public enum GamepadButton : int
     {
         None = -1,
-        ActionX = 0,
-        ActionA,
+        ActionA = 0,
         ActionB,
+        ActionX,
         ActionY,
         LeftShoulder,
         RightShoulder,
@@ -15,10 +15,9 @@
         Start,
         LeftStick,
         RightStick,
-        Button12 = RightStick,
-        Button13,
-        Button14,
-        Button15,
-        Button16,
+        DPadLeft,
+        DPadDown,
+        DPadRight,
+        DPadUp,
     }
 }

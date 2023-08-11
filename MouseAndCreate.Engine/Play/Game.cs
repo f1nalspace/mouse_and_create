@@ -2,6 +2,7 @@
 using MouseAndCreate.Frames;
 using MouseAndCreate.Input;
 using MouseAndCreate.Objects;
+using MouseAndCreate.Platform;
 using MouseAndCreate.Rendering;
 using MouseAndCreate.Textures;
 using MouseAndCreate.Types;
@@ -25,7 +26,8 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
     protected readonly IRenderer _renderer;
 
-    private readonly IInputQuery _inputQuery;
+    protected readonly IWindowManager _windowMng;
+    protected readonly IInputQuery _inputQuery;
 
     public GameSetup Setup => _setup;
     public IGameObjectManager Objects => _gameObjectManager;
@@ -47,10 +49,10 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     protected ITexture _mouseArrowTexture = null;
     protected ITexture _testTexture = null;
 
-    public Game(IInputQuery inputQuery, GameSetup setup = null)
+    public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)
     {
-        if (inputQuery is null)
-            throw new ArgumentNullException(nameof(inputQuery));
+        _windowMng = windowMng ?? throw new ArgumentNullException(nameof(windowMng));
+        _inputQuery = inputQuery ?? throw new ArgumentNullException(nameof(inputQuery));
 
         _setup = (setup ??= GameSetup.Default);
 
@@ -65,8 +67,6 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _camera.Changed += delegate (ICamera camera) {
             RaisePropertyChanged(nameof(Camera));
         };
-
-        _inputQuery = inputQuery;
 
         _inputState = new InputState();
 

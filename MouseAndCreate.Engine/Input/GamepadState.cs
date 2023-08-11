@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections;
 
 namespace MouseAndCreate.Input
@@ -9,6 +10,11 @@ namespace MouseAndCreate.Input
 
         private readonly BitArray _buttons;
         private readonly BitArray _buttonsPrevious;
+
+        public Vector2 Axis0 { get; internal set; }
+        public Vector2 Axis1 { get; internal set; }
+        public Vector2 Axis2 { get; internal set; }
+        public Vector2 Axis3 { get; internal set; }
 
         public Guid Id { get; }
         public string Name { get; set; }

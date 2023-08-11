@@ -13,6 +13,7 @@
     </Window.DataContext>
     <Window.Resources>
         <local:SizeEventArgsConverter x:Key="sizeEventArgsConverter" />
+        <local:CursorConverter x:Key="cursorConverter" />
     </Window.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnWindowLoadedCommand}" />
@@ -58,7 +59,7 @@
             </RibbonTab>
         </Ribbon>
         <Grid x:Name="glGrid" Grid.Row="1">
-            <glWpfControl:GLWpfControl x:Name="glControl">
+            <glWpfControl:GLWpfControl x:Name="glControl" Cursor="{Binding Cursor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource cursorConverter}}">
                 <dxmvvm:Interaction.Behaviors>
                     <local:GLControlServiceBehavior />
                 </dxmvvm:Interaction.Behaviors>

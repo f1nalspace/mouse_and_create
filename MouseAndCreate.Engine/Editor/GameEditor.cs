@@ -1,6 +1,7 @@
 ﻿using MouseAndCreate.Configurations;
 using MouseAndCreate.Frames;
 using MouseAndCreate.Input;
+using MouseAndCreate.Platform;
 using MouseAndCreate.Play;
 using MouseAndCreate.Rendering;
 using OpenTK.Mathematics;
@@ -13,12 +14,13 @@ namespace MouseAndCreate.Editor
         const float CameraZoomStep = 0.1f;
         const float CameraMoveStep = 10.0f;
 
+        private CursorType _lastMouseMoveCursor = CursorType.Arrow;
         private bool _mouseMoveActive = false;
         private Vector2 _mouseMoveStart = Vector2.Zero;
 
         private bool _spaceDown = false;
 
-        public GameEditor(IInputQuery inputQuery, GameSetup setup = null) : base(inputQuery, setup)
+        public GameEditor(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null) : base(windowMng, inputQuery, setup)
         {
             Camera.Offset = new Vector2(0, 0);
             Camera.Scale = new Vector2(1, 1);
@@ -42,6 +44,8 @@ namespace MouseAndCreate.Editor
         {
             if (button == MouseButton.Left && _spaceDown && !_mouseMoveActive)
             {
+                _lastMouseMoveCursor = _windowMng.GetCursor();
+                _windowMng.SetCursor(CursorType.Move);
                 _mouseMoveActive = true;
                 _mouseMoveStart = CurrentMousePos;
             }
@@ -53,6 +57,7 @@ namespace MouseAndCreate.Editor
             {
                 _mouseMoveActive = false;
                 _mouseMoveStart = Vector2.Zero;
+                _windowMng.SetCursor(_lastMouseMoveCursor);
             }
         }
 

@@ -1,19 +1,19 @@
 ﻿using DevExpress.Mvvm;
 using MouseAndCreate.Input;
-using MouseAndCreate.Play;
+using MouseAndCreate.Platform;
 using OpenTK.Mathematics;
 using System;
 
 namespace MouseAndCreate.Editor;
 
-public class MainViewModel : ViewModelBase
+public class MainViewModel : ViewModelBase, IWindowManager
 {
     public DelegateCommand OnWindowLoadedCommand { get; }
     public DelegateCommand OnWindowUnloadedCommand { get; }
 
     public GameEditor Editor { get => GetValue<GameEditor>(); private set => SetValue(value); }
 
-    public string CameraInfo { get => GetValue<string>(); private set => SetValue(value); }
+    public CursorType Cursor { get => GetValue<CursorType>(); set => SetValue(value); }
 
     private IGameInputManager _gameInputMng = null;
 
@@ -33,9 +33,7 @@ public class MainViewModel : ViewModelBase
         if (inputQueryService is null)
             throw new Exception("Input query service not registered!");
 
-        Editor = new GameEditor(inputQueryService);
-        CameraInfo = Editor.Camera.ToString();
-        Editor.Camera.Changed += OnEditorCameraChanged;
+        Editor = new GameEditor(this, inputQueryService);
 
         Frames.IFrame frame = Editor.Frames.AddFrame();
         Editor.ActiveFrameId = frame.Id;
@@ -50,14 +48,15 @@ public class MainViewModel : ViewModelBase
         Editor.Resize(_glControlSize);
     }
 
-    private void OnEditorCameraChanged(ICamera camera)
-        => CameraInfo = Editor.Camera.ToString();
-
     private void OnWindowUnloaded()
     {
         Editor?.Dispose();
         Editor = null;
     }
+
+    CursorType ICursorManager.GetCursor() => Cursor;
+
+    void ICursorManager.SetCursor(CursorType cursor) => Cursor = cursor;
 
     public void GameMouseMove(Vector2 mousePos)
     {
@@ -135,4 +134,6 @@ public class MainViewModel : ViewModelBase
         if (_gameInputMng is not null)
             _gameInputMng.Input(input);
     }
+
+    
 }

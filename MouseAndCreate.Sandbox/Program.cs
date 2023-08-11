@@ -11,6 +11,8 @@ using System.Diagnostics;
 using OTKButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 using OTKKeys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 using IK = MouseAndCreate.Input.Key;
+using MouseAndCreate.Platform;
+using OpenTK.Windowing.Common.Input;
 
 namespace MouseAndCreate;
 
@@ -175,6 +177,45 @@ class Program
         public Vector2 GetMousePosition() => _window.MousePosition;
     }
 
+    class GameWindowManager : IWindowManager
+    {
+        private readonly GameWindow _window;
+
+        public GameWindowManager(GameWindow window)
+        {
+            _window = window;
+        }
+
+        public CursorType GetCursor()
+        {
+            if (_window.Cursor == MouseCursor.Default)
+                return CursorType.Arrow;
+            else if (_window.Cursor == MouseCursor.Crosshair)
+                return CursorType.Crosshair;
+            else if (_window.Cursor == MouseCursor.HResize)
+                return CursorType.HResize;
+            else if (_window.Cursor == MouseCursor.VResize)
+                return CursorType.VResize;
+            else if (_window.Cursor == MouseCursor.IBeam)
+                return CursorType.IBeam;
+            else
+                return CursorType.Arrow;
+        }
+
+        public void SetCursor(CursorType cursor)
+        {
+            _window.Cursor = cursor switch
+            {
+                CursorType.Hand => MouseCursor.Hand,
+                CursorType.Crosshair => MouseCursor.Crosshair,
+                CursorType.HResize => MouseCursor.HResize,
+                CursorType.VResize => MouseCursor.VResize,
+                CursorType.IBeam => MouseCursor.IBeam,
+                _ => MouseCursor.Default,
+            };
+        }
+    }
+
     static void Main(string[] args)
     {
         GameSetup setup = new GameSetup(new Vector2i(1280, 720));
@@ -186,6 +227,8 @@ class Program
         });
 
         GameWindowInputQuery inputQuery = new GameWindowInputQuery(window);
+
+        GameWindowManager windowMng = new GameWindowManager(window);
 
         window.Resize += delegate (ResizeEventArgs args) { _game.Resize(args.Size); };
 
@@ -202,7 +245,7 @@ class Program
 
         window.Load += delegate ()
         {
-            _game = new Game(inputQuery);
+            _game = new Game(windowMng, inputQuery);
             IFrame frame = _game.Frames.AddFrame();
             _game.ActiveFrameId = frame.Id;
             _inputMng = _game as IGameInputManager;

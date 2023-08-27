@@ -10,6 +10,7 @@ public class MainViewModel : ViewModelBase, IWindowManager
 {
     public DelegateCommand OnWindowLoadedCommand { get; }
     public DelegateCommand OnWindowUnloadedCommand { get; }
+    public DelegateCommand OnGLReadyCommand { get; }
 
     public GameEditor Editor { get => GetValue<GameEditor>(); private set => SetValue(value); }
 
@@ -25,9 +26,15 @@ public class MainViewModel : ViewModelBase, IWindowManager
     {
         OnWindowLoadedCommand = new DelegateCommand(OnWindowLoaded);
         OnWindowUnloadedCommand = new DelegateCommand(OnWindowUnloaded);
+        OnGLReadyCommand = new DelegateCommand(OnGLReady);
     }
 
     private void OnWindowLoaded()
+    {
+        
+    }
+
+    private void OnGLReady()
     {
         IControlInputQueryService inputQueryService = GetService<IControlInputQueryService>();
         if (inputQueryService is null)

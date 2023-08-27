@@ -5,8 +5,11 @@ using MouseAndCreate.Types;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace MouseAndCreate.Rendering.OpenGL
 {
@@ -29,6 +32,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         private Vector2 _viewportOrigin = Vector2.Zero;
         private Vector2 _viewportSize = Vector2.Zero;
+        private Vector2 _lineWidthRange = Vector2.One;
 
         public OpenGLRenderer()
         {
@@ -82,6 +86,38 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         public void Init()
         {
+            string version = GL.GetString(StringName.Version);
+            string vendor = GL.GetString(StringName.Vendor);
+            string renderer = GL.GetString(StringName.Renderer);
+            string glsl = GL.GetString(StringName.ShadingLanguageVersion);
+
+            GL.GetFloat(GetPName.LineWidthRange, out Vector2 lineWidthRange);
+            _lineWidthRange = lineWidthRange;
+
+            GL.GetInteger(GetPName.NumExtensions, out int numExtensions);
+
+            List<string> extensions = new List<string>(2048);
+            for (int i = 0; i < numExtensions; ++i)
+            {
+                string ext = GL.GetString(StringNameIndexed.Extensions, i);
+                extensions.Add(ext);
+            }
+            extensions.Sort();
+
+            //string extensions = GL.GetString(StringName.Extensions);
+
+            CheckForErrors();
+
+            Debug.WriteLine("OpenGL infos:");
+            Debug.WriteLine($"\tVersion: {version}");
+            Debug.WriteLine($"\tVendor: {vendor}");
+            Debug.WriteLine($"\tRenderer: {renderer}");
+            Debug.WriteLine($"\tGLSL Version: {glsl}");
+            Debug.WriteLine($"\tLine Width Range: {lineWidthRange}");
+            Debug.WriteLine($"\t{extensions.Count} Extensions:");
+            foreach (var ext in extensions)
+                Debug.WriteLine($"\t\t{ext}");
+
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
             GL.Enable(EnableCap.Blend);
@@ -89,7 +125,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             GL.Enable(EnableCap.LineSmooth);
 
-            GL.LineWidth(1);
+            CheckForErrors();
 
             // Quad texture
             {
@@ -105,6 +141,8 @@ namespace MouseAndCreate.Rendering.OpenGL
                 va.VertexAttribFloat(0, quadVertexAttribLocation, 3, QuadBufferTexture.Stride, 0);
                 va.VertexAttribFloat(1, quadTexcoordAttribLocation, 2, QuadBufferTexture.Stride, 3 * sizeof(float));
                 va.Unbind();
+
+                CheckForErrors();
             }
 
             // Quad color
@@ -119,6 +157,8 @@ namespace MouseAndCreate.Rendering.OpenGL
                 int quadVertexAttribLocation = shader.GetAttribLocation("aPosition");
                 va.VertexAttribFloat(0, quadVertexAttribLocation, 3, QuadBufferColor.Stride, 0);
                 va.Unbind();
+
+                CheckForErrors();
             }
 
 
@@ -145,9 +185,9 @@ namespace MouseAndCreate.Rendering.OpenGL
                 _lineBufferRect.UseVertices();
                 _lineVARect.VertexAttribFloat(0, positionAttribLocation, 3, 3 * sizeof(float), 0);
                 _lineVARect.Unbind();
-            }
 
-            
+                CheckForErrors();
+            }
         }
 
         public void Release()
@@ -173,12 +213,14 @@ namespace MouseAndCreate.Rendering.OpenGL
             _viewportOrigin = new Vector2(x, y);
             _viewportSize = new Vector2(width, height);
             GL.Viewport(x, y, width, height);
+            CheckForErrors();
         }
 
         public void Clear(Color4 clearColor)
         {
             GL.ClearColor(clearColor);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            CheckForErrors();
         }
 
         public void DrawQuad(Matrix4 viewProjection, Vector3 translation, Vector3 scale, Color4 color)
@@ -201,6 +243,8 @@ namespace MouseAndCreate.Rendering.OpenGL
             _quadVAColor.Unbind();
 
             _quadShaderColor.Unbind();
+
+            CheckForErrors();
         }
 
         public void DrawQuad(Matrix4 viewProjection, Vector3 translation, Vector3 scale, ITexture texture, Color4? color = null, Vector4? uvAdjustment = null)
@@ -234,12 +278,19 @@ namespace MouseAndCreate.Rendering.OpenGL
             _quadShaderTexture.Unbind();
 
             texture.Unbind();
+
+            CheckForErrors();
         }
 
         public void DrawLine(Matrix4 viewProjection, Vector3 p0, Vector3 p1, float thickness, Color4 color, LinePattern pattern = LinePattern.Solid, float stippleFactor = 2.0f)
         {
+            var actualThickness = Math.Max(Math.Min(_lineWidthRange.Y, thickness), _lineWidthRange.X);
+            GL.LineWidth(actualThickness);
+
             float[] vertices = new float[] { p0.X, p0.Y, p0.Z, p1.X, p1.Y, p1.Z };
             _lineBufferOne.UpdateVertices(0, vertices.Length, vertices);
+
+            CheckForErrors();
 
             _lineShader.Bind();
 
@@ -259,12 +310,14 @@ namespace MouseAndCreate.Rendering.OpenGL
             GL.UniformMatrix4(viewProjectionLocation, true, ref viewProjection);
 
             _lineVAOne.Bind();
-            GL.LineWidth(thickness);
             GL.DrawArrays(PrimitiveType.Lines, 0, vertices.Length);
-            GL.LineWidth(1);
             _lineVAOne.Unbind();
 
             _lineShader.Unbind();
+
+            GL.LineWidth(_lineWidthRange.X);
+
+            CheckForErrors();
         }
 
         public void DrawRectangle(Matrix4 viewProjection, Vector3 translation, Vector3 scale, float thickness, Color4 color)
@@ -282,11 +335,18 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         public void CheckForErrors()
         {
-            ErrorCode err = GL.GetError();
-            if (err != ErrorCode.NoError)
+            StringBuilder s = new StringBuilder();
+            ErrorCode err;
+
+            while ((err = GL.GetError()) != ErrorCode.NoError)
             {
-                throw new Exception($"OpenGL Error: {err}");
+                if (s.Length > 0)
+                    s.Append(", ");
+                s.Append(err);
             }
+
+            if (s.Length > 0)
+                throw new Exception($"OpenGL Error(s): {s}");
         }
 
         public void Dispose()

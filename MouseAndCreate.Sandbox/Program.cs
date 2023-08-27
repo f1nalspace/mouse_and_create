@@ -224,6 +224,9 @@ class Program
         {
             Title = setup.Title,
             Size = setup.WindowSize,
+            API = ContextAPI.OpenGL,
+            APIVersion = new Version(3, 3),
+            Profile = ContextProfile.Compatability,
         });
 
         GameWindowInputQuery inputQuery = new GameWindowInputQuery(window);

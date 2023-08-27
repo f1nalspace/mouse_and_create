@@ -218,8 +218,6 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         }
 
         _renderer.DrawRectangle(viewProject, 0, 0, cameraSize.X, cameraSize.Y, 4.0f * lineScale, Color4.Yellow);
-
-        _renderer.CheckForErrors();
     }
 
     private bool _disposed = false;

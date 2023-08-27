@@ -36,12 +36,13 @@ namespace MouseAndCreate.Editor
 
             _viewModel = DataContext as MainViewModel;
 
-            glControl.Start(new OpenTK.Wpf.GLWpfControlSettings() { MajorVersion = 3, MinorVersion = 3 });
+            glControl.Ready += OnGlControlReady;
 
             glControl.Render += OnGlControlRender;
 
-            glControl.SizeChanged += OnGlControlSizeChanged;
+            glControl.Start(new OpenTK.Wpf.GLWpfControlSettings() { MajorVersion = 3, MinorVersion = 3 });
 
+            glControl.SizeChanged += OnGlControlSizeChanged;
             glControl.MouseMove += OnGlControlMouseMove;
             glControl.MouseLeave += OnGlControlMouseLeave;
             glControl.MouseEnter += OnGlControlMouseEnter;
@@ -51,6 +52,11 @@ namespace MouseAndCreate.Editor
             glControl.KeyDown += OnGlControlKeyDown;
             glControl.KeyUp += OnGlControlKeyUp;
             glControl.TextInput += OnGlControlTextInput;
+        }
+
+        private void OnGlControlReady()
+        {
+            _viewModel.OnGLReadyCommand.Execute(null);
         }
 
         private static IMB Translate(WinMouseButton button)

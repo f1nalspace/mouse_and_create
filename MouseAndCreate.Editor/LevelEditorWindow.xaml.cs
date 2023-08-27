@@ -40,7 +40,7 @@ namespace MouseAndCreate.Editor
 
             glControl.Render += OnGlControlRender;
 
-            glControl.Start(new OpenTK.Wpf.GLWpfControlSettings() { MajorVersion = 3, MinorVersion = 3 });
+            glControl.Start(new OpenTK.Wpf.GLWpfControlSettings() { MajorVersion = 3, MinorVersion = 3, GraphicsProfile = OpenTK.Windowing.Common.ContextProfile.Compatability });
 
             glControl.SizeChanged += OnGlControlSizeChanged;
             glControl.MouseMove += OnGlControlMouseMove;

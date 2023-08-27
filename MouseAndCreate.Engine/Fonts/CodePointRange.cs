@@ -16,7 +16,6 @@
         public static readonly CodePointRange HangulCompatibilityJamo = new CodePointRange(0x3130, 0x318f);
         public static readonly CodePointRange HangulSyllables = new CodePointRange(0xac00, 0xd7af);
 
-
         public int Start { get; }
         public int End { get; }
         public int Length => (End - Start) + 1;

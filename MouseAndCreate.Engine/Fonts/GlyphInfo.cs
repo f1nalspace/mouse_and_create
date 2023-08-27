@@ -4,14 +4,16 @@ namespace MouseAndCreate.Fonts
 {
     public readonly struct GlyphInfo
     {
+        public Vector4 Rect { get; }
+        public Vector2 Offset { get; }
+        public Vector2 Advance { get; }
+        public float Size { get; }
         public int CodePoint { get; }
-        public Vector4i Rect { get; }
-        public Vector2i Offset { get; }
-        public Vector2i Advance { get; }
 
-        public GlyphInfo(int codePoint, Vector4i rect, Vector2i offset, Vector2i advance)
+        public GlyphInfo(int codePoint, float size, Vector4 rect, Vector2 offset, Vector2 advance)
         {
             CodePoint = codePoint;
+            Size = size;
             Rect = rect;
             Offset = offset;
             Advance = advance;

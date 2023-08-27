@@ -112,22 +112,25 @@ namespace MouseAndCreate.Editor
 
         public override void Render(TimeSpan deltaTime)
         {
-            IFrame frame = Frames.GetFrameById(ActiveFrameId);
-
-            Vector2 totalSize = frame.Setup.TotalSize;
-
-            Vector2 cameraSize = frame.Setup.CameraSize;
-
-            Matrix4 vp = Camera.ViewProjection;
-
             _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
 
             _renderer.Clear(Color4.LightGray);
 
-            _renderer.DrawQuad(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), Color4.White);
-            _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), 1.0f, Color4.Black);
+            IFrame frame = Frames.GetFrameById(ActiveFrameId);
 
-            _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(cameraSize.X, cameraSize.Y), 1.0f, Color4.Blue);
+            if (frame is not null)
+            {
+                Vector2 totalSize = frame.Setup.TotalSize;
+
+                Vector2 cameraSize = frame.Setup.CameraSize;
+
+                Matrix4 vp = Camera.ViewProjection;
+
+                _renderer.DrawQuad(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), Color4.White);
+                _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), 0.5f, Color4.Black);
+
+                _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(cameraSize.X, cameraSize.Y), 0.5f, Color4.Blue);
+            }
         }
     }
 }

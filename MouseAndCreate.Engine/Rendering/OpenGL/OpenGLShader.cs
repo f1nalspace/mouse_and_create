@@ -14,7 +14,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             _programId = GL.CreateProgram();
         }
 
-        public bool Attach(params ShaderSource[] sources)
+        public bool Attach(params IShaderSource[] sources)
         {
             if (sources is null || sources.Length == 0)
                 return false;
@@ -22,7 +22,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             // Load and compile temporary shaders
             Span<int> shaderIds = stackalloc int[sources.Length];
             int index = 0;
-            foreach (ShaderSource source in sources)
+            foreach (IShaderSource source in sources)
             {
                 ShaderType type = source.Type switch
                 {

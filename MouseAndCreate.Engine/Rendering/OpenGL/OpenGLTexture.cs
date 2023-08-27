@@ -1,8 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using StbImageSharp;
 using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace MouseAndCreate.Rendering.OpenGL
 {
@@ -11,30 +9,19 @@ namespace MouseAndCreate.Rendering.OpenGL
         private readonly int _id;
 
         public string Name { get; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public int Width { get; }
+        public int Height { get; }
+        public TextureFormat Format { get; }
 
-        public OpenGLTexture(string name, int width = 0, int height = 0)
+        public OpenGLTexture(string name, int width, int height, TextureFormat format, byte[] pixels)
         {
             Name = name;
             Width = width;
             Height = height;
+            Format = format;
+
             _id = GL.GenTexture();
-        }
 
-        static ColorComponents GetRequiredComponents(TextureFormat format)
-        {
-            ColorComponents result = format switch
-            {
-                TextureFormat.RGBA8 => ColorComponents.RedGreenBlueAlpha,
-                TextureFormat.Alpha8 => ColorComponents.Grey,
-                _ => throw new NotSupportedException($"The texture format '{format}' is not supported")
-            };
-            return result;
-        }
-
-        private void Upload(byte[] pixels, int width, int height, TextureFormat format)
-        {
             PixelInternalFormat internalFormat = format switch
             {
                 TextureFormat.RGBA8 => PixelInternalFormat.Rgba,
@@ -58,28 +45,8 @@ namespace MouseAndCreate.Rendering.OpenGL
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, pixelFormat, PixelType.UnsignedByte, pixels);
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
-
-            Width = width;
-            Height = height;
-        }
-
-        public void Upload(byte[] data, TextureFormat format, bool flipY = true)
-        {
-            ColorComponents components = GetRequiredComponents(format);
-            StbImage.stbi_set_flip_vertically_on_load(flipY ? 1 : 0);
-            ImageResult image = ImageResult.FromMemory(data, components);
-            if (image is not null)
-                Upload(image.Data, image.Width, image.Height, format);
-        }
-
-        public void Upload(Stream stream, TextureFormat format, bool flipY = true)
-        {
-            ColorComponents components = GetRequiredComponents(format);
-            StbImage.stbi_set_flip_vertically_on_load(flipY ? 1 : 0);
-            ImageResult image = ImageResult.FromStream(stream, components);
-            if (image is not null)
-                Upload(image.Data, image.Width, image.Height, format);
         }
 
         public void Bind(int index = 0)

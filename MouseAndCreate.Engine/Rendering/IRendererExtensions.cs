@@ -4,6 +4,12 @@ namespace MouseAndCreate.Rendering
 {
     public static class IRendererExtensions
     {
+        public static ITexture LoadTexture(this IRenderer renderer, ITextureSource source, TextureFormat target, TextureLoadFlags flags = TextureLoadFlags.FlipY)
+        {
+            TextureData data = source.Load(target, flags);
+            return renderer.LoadTexture(source.Name, data);
+        }
+
         public static void DrawQuad(this IRenderer renderer, Matrix4 viewProjection, Vector2 translation, Vector2 scale, Color4 color)
             => renderer.DrawQuad(viewProjection, new Vector3(translation), new Vector3(scale) { Z = 1.0f, }, color);
         public static void DrawQuad(this IRenderer renderer, Matrix4 viewProjection, float cx, float cy, float sx, float sy, Color4 color)

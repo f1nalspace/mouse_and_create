@@ -4,13 +4,13 @@ using MouseAndCreate.Play;
 
 namespace MouseAndCreate.Rendering
 {
-    class ShaderSource
+    class ResourceShaderSource : IShaderSource
     {
         public string Name { get; }
         public ShaderSourceType Type { get; }
         public string Link { get; }
 
-        public ShaderSource(string name, ShaderSourceType type, string link)
+        public ResourceShaderSource(string name, ShaderSourceType type, string link)
         {
             Name = name;
             Type = type;

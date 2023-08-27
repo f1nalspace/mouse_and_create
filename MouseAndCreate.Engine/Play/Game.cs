@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Configurations;
+using MouseAndCreate.Fonts;
 using MouseAndCreate.Frames;
 using MouseAndCreate.Input;
 using MouseAndCreate.Objects;
@@ -10,6 +11,7 @@ using OpenTK.Mathematics;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace MouseAndCreate.Play;
 
@@ -74,6 +76,14 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         _mouseArrowTexture = _renderer.LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8);
         _testTexture = _renderer.LoadTexture(TestTextures.OpenGLTestTexture, TextureFormat.RGBA8);
+
+        Stream fontStream = FontResources.SulphurPointRegular;
+
+        IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
+        IFontBuilder fontBuilder = fontBuilderFactory.Create();
+        IFontBuilderContext builderCtx = fontBuilder.Begin(2048, 2048);
+        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 40, new[] { CodePointRange.BasicLatin });
+        BitmapFont fontBitmap = fontBuilder.End(builderCtx);
     }
 
     private void ChangeFrameById(Guid id)

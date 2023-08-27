@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\SulphurPointRegular.ttf" />
     <None Remove="Shaders\shader_line.frag" />
     <None Remove="Shaders\shader_line.vert" />
     <None Remove="Shaders\shader_quad_color.frag" />
@@ -21,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Fonts\SulphurPointRegular.ttf" />
     <EmbeddedResource Include="Textures\mouse_arrow.png" />
   </ItemGroup>
 

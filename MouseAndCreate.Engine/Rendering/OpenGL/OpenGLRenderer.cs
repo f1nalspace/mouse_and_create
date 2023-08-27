@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Buffers;
+using MouseAndCreate.Graphics;
 using MouseAndCreate.Play;
 using MouseAndCreate.Shaders;
 using MouseAndCreate.Types;
@@ -47,7 +48,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             return result;
         }
 
-        private static IShader LoadShader(string name, params ShaderSource[] sources)
+        private static IShader LoadShader(string name, params IShaderSource[] sources)
         {
             OpenGLShader result = new OpenGLShader(name);
             result.Attach(sources);
@@ -60,28 +61,17 @@ namespace MouseAndCreate.Rendering.OpenGL
             return result;
         }
 
-        public ITexture LoadTexture(string name, byte[] data, TextureFormat format, bool flipY = true)
+        public ITexture LoadTexture(string name, TextureData data)
         {
-            ITexture result = new OpenGLTexture(name);
-            result.Upload(data, format, flipY);
-            return result;
+            return new OpenGLTexture(name, data.Width, data.Height, data.Format, data.Data);
         }
 
-        public ITexture LoadTexture(string name, Stream stream, TextureFormat format, bool flipY = true)
+        public ITexture LoadTexture(ITextureSource source, TextureFormat format, TextureLoadFlags flags = TextureLoadFlags.FlipY)
         {
-            ITexture result = new OpenGLTexture(name);
-            result.Upload(stream, format, flipY);
-            return result;
-        }
-
-        public ITexture LoadTexture(ITextureSource source, TextureFormat format, bool flipY = true)
-        {
-            if (source is ResourceTextureSource resourceSource)
-            {
-                Stream stream = resourceSource.GetStream();
-                return LoadTexture(source.Name, stream, format, flipY);
-            }
-            return null;
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            TextureData data = source.Load(format, flags);
+            return LoadTexture(source.Name, data);
         }
 
         public void Init()
@@ -353,7 +343,7 @@ namespace MouseAndCreate.Rendering.OpenGL
         {
         }
 
-        
+
     }
 }
 

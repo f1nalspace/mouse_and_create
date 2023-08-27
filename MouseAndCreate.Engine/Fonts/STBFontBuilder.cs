@@ -1,9 +1,12 @@
-﻿using OpenTK.Mathematics;
+﻿using MouseAndCreate.Graphics;
+using OpenTK.Mathematics;
 using StbTrueTypeSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MouseAndCreate.Fonts
 {
@@ -41,14 +44,14 @@ namespace MouseAndCreate.Fonts
             return context;
         }
 
-        public void Add(IFontBuilderContext context, string fontName, byte[] fontData, int fontIndex, float fontSize, IEnumerable<CodePointRange> ranges)
+        public void Add(IFontBuilderContext context, string fontName, ReadOnlySpan<byte> fontData, int fontIndex, float fontSize, IEnumerable<CodePointRange> ranges)
         {
             if (context is not STBFontBuilderContext correctContext)
                 throw new ArgumentNullException(nameof(context));
             if (string.IsNullOrEmpty(fontName))
                 throw new ArgumentNullException(nameof(fontName));
-            if (fontData is null || fontData.Length == 0)
-                throw new ArgumentNullException(nameof(fontData));
+            if (fontData.Length == 0)
+                throw new ArgumentException("Font data is empty", nameof(fontData));
             if (fontIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(fontIndex), fontIndex, $"The font index '{fontIndex}' is out-of-range. Please specify a value that is greater or equal than zero.");
             if (fontSize <= 0)
@@ -58,18 +61,25 @@ namespace MouseAndCreate.Fonts
             if (!ranges.Any())
                 throw new ArgumentException("Code point ranges are empty. Please specify at least one code-point range.", nameof(ranges));
 
+            using MemoryStream tmpStream = new MemoryStream(fontData.Length);
+            byte[] font = tmpStream.GetBuffer();
+            Span<byte> bufferSpan = font.AsSpan();
+            fontData.CopyTo(bufferSpan);
+
             int fontOffset;
-            fixed (byte* fontPtr = fontData)
+            fixed (byte* fontPtr = font)
                 fontOffset = StbTrueType.stbtt_GetFontOffsetForIndex(fontPtr, fontIndex);
 
-            StbTrueType.stbtt_fontinfo fontInfo = StbTrueType.CreateFont(fontData, fontOffset);
+            StbTrueType.stbtt_fontinfo fontInfo = StbTrueType.CreateFont(font, fontOffset);
             if (fontInfo is null)
-                throw new InvalidDataException($"The font '{fontName}' with data length of '{fontData.Length}' failed to load");
+                throw new InvalidDataException($"The font '{fontName}' with data length of '{font.Length}' failed to load");
 
             float scaleFactor = StbTrueType.stbtt_ScaleForPixelHeight(fontInfo, fontSize);
 
             int ascent, descent, lineGap;
             StbTrueType.stbtt_GetFontVMetrics(fontInfo, &ascent, &descent, &lineGap);
+
+            float inverseSize = 1.0f / fontSize;
 
             foreach (CodePointRange range in ranges)
             {
@@ -94,9 +104,9 @@ namespace MouseAndCreate.Fonts
                     Vector2i o = new Vector2i((int)cd[i].xoff, (int)Math.Round(yOff));
                     Vector2i a = new Vector2i((int)Math.Round(cd[i].xadvance), 0);
 
-                    Vector4 rect = new Vector4(r.X / scaleFactor, r.Y / scaleFactor, r.Z / scaleFactor, r.W / scaleFactor);
-                    Vector2 offset = new Vector2(o.X / scaleFactor, o.Y / scaleFactor);
-                    Vector2 advance = new Vector2(a.X / scaleFactor, a.Y / scaleFactor);
+                    Vector4 rect = new Vector4(r) * inverseSize;
+                    Vector2 offset = new Vector2(o.X, o.Y) * inverseSize;
+                    Vector2 advance = new Vector2(a.X, a.Y) * inverseSize;
 
                     GlyphInfo glyphInfo = new GlyphInfo(codePoint, fontSize, rect, offset, advance);
 
@@ -110,7 +120,8 @@ namespace MouseAndCreate.Fonts
             if (context is not STBFontBuilderContext correctContext)
                 throw new ArgumentNullException(nameof(context));
             StbTrueType.stbtt_PackEnd(correctContext._context);
-            BitmapFont result = new BitmapFont();
+            Image32 image = Image32.FromAlpha(new Vector2i(context.Width, context.Height), correctContext.Data);
+            BitmapFont result = new BitmapFont(correctContext.Width, correctContext.Height, correctContext.Glyphs.ToImmutableDictionary(), image);
             return result;
         }
     }

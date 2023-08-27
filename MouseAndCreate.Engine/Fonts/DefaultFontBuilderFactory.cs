@@ -1,6 +1,6 @@
 ﻿namespace MouseAndCreate.Fonts
 {
-    public class DefaultIFontBuilderFactory : IFontBuilderFactory
+    public class DefaultFontBuilderFactory : IFontBuilderFactory
     {
         public IFontBuilder Create() => new STBFontBuilder();
     }

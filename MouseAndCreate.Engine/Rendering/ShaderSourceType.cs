@@ -1,6 +1,6 @@
 ﻿namespace MouseAndCreate.Rendering
 {
-    enum ShaderSourceType
+    public enum ShaderSourceType
     {
         Vertex = 0,
         Fragment,

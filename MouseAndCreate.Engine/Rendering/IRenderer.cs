@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using MouseAndCreate.Graphics;
+using OpenTK.Mathematics;
 using System;
 using System.IO;
 
@@ -9,11 +10,7 @@ namespace MouseAndCreate.Rendering
         void Init();
         void Release();
 
-        
-
-        ITexture LoadTexture(string name, byte[] data, TextureFormat format, bool flipY = true);
-        ITexture LoadTexture(string name, Stream stream, TextureFormat format, bool flipY = true);
-        ITexture LoadTexture(ITextureSource source, TextureFormat format, bool flipY = true);
+        ITexture LoadTexture(string name, TextureData data);
 
         void SetViewport(int x, int y, int width, int height);
         void Clear(Color4 clearColor);

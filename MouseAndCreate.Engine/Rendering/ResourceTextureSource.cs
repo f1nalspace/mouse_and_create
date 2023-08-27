@@ -24,5 +24,11 @@ namespace MouseAndCreate.Rendering
         }
 
         public override string ToString() => $"{Name} => {Link}";
+
+        public TextureData Load(TextureFormat target, TextureLoadFlags flags)
+        {
+            Stream stream = GetStream();
+            return TextureLoaderFactory.Instance.Load(stream, target, flags);
+        }
     }
 }

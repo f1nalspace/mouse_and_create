@@ -229,6 +229,8 @@ class Program
             Profile = ContextProfile.Compatability,
         });
 
+        window.CursorState = CursorState.Hidden;
+
         GameWindowInputQuery inputQuery = new GameWindowInputQuery(window);
 
         GameWindowManager windowMng = new GameWindowManager(window);

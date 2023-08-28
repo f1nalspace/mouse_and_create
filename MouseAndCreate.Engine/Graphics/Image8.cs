@@ -6,12 +6,12 @@ using System.Diagnostics;
 
 namespace MouseAndCreate.Graphics
 {
-    public class Image32 : IAssignable<Image32>, ICloneable<Image32>, IImage
+    public class Image8 : IAssignable<Image8>, ICloneable<Image8>, IImage
     {
         public Guid Id { get; }
         public string Name { get; set; }
         public Vector2i Size { get; private set; }
-        public int Length => Size.X * Size.Y * 4;
+        public int Length => Size.X * Size.Y;
 
         public int Width => Size.X;
         public int Height => Size.Y;
@@ -19,9 +19,9 @@ namespace MouseAndCreate.Graphics
         public ReadOnlySpan<byte> Data => _data.AsSpan();
         private ImmutableArray<byte> _data;
 
-        public Image32(Vector2i size, ImmutableArray<byte> data, Guid? id = null, string name = null)
+        public Image8(Vector2i size, ImmutableArray<byte> data, Guid? id = null, string name = null)
         {
-            int expectedLen = size.X * size.Y * 4;
+            int expectedLen = size.X * size.Y;
             if (data.Length != expectedLen)
                 throw new ArgumentException($"The image '{name}' data length is expected to be '{expectedLen}', but got '{data.Length}'. Please check that the size '{size}' does match the data!", nameof(data));
             Id = id ?? Guid.NewGuid();
@@ -40,7 +40,7 @@ namespace MouseAndCreate.Graphics
             // TODO(final): Resize of image with lacqos or something
         }
 
-        public void Assign(Image32 other)
+        public void Assign(Image8 other)
         {
             if (other is null)
                 return;
@@ -49,9 +49,9 @@ namespace MouseAndCreate.Graphics
             _data = other._data;
         }
 
-        public Image32 Clone()
+        public Image8 Clone()
         {
-            Image32 result = new Image32(Vector2i.Zero, ImmutableArray<byte>.Empty, Id, Name);
+            Image8 result = new Image8(Vector2i.Zero, ImmutableArray<byte>.Empty, Id, Name);
             result.Assign(this);
             return result;
         }
@@ -68,7 +68,7 @@ namespace MouseAndCreate.Graphics
             }
         }
 
-        ~Image32()
+        ~Image8()
         {
             if (!_disposed)
                 Debug.WriteLine($"[WARNING] Image '{Name}' not disposed!");

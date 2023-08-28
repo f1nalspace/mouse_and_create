@@ -19,6 +19,14 @@ namespace MouseAndCreate.Rendering
             Format = format;
         }
 
+        public TextureData(int width, int height, ReadOnlySpan<byte> data, TextureFormat format)
+        {
+            Width = width;
+            Height = height;
+            Data = data.ToArray();
+            Format = format;
+        }
+
         public static readonly TextureData Empty = new TextureData(0,0, Array.Empty<byte>(), TextureFormat.None);
     }
 }

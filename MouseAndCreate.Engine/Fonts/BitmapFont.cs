@@ -8,16 +8,16 @@ namespace MouseAndCreate.Fonts
         // https://github.com/StbSharp/StbTrueTypeSharp/blob/master/samples/StbTrueTypeSharp.MonoGame.Test/FontBaker.cs
 
         public ImmutableDictionary<int, GlyphInfo> Glyphs { get; }
-        public Image32 Image { get; }
+        public ImmutableArray<byte> Pixels { get; }
         public int Width { get; }
         public int Height { get; }
 
-        internal BitmapFont(int width, int height, ImmutableDictionary<int, GlyphInfo> glyphs, Image32 image)
+        internal BitmapFont(int width, int height, ImmutableDictionary<int, GlyphInfo> glyphs, ImmutableArray<byte> pixels)
         {
             Width = width;
             Height = height;
             Glyphs = glyphs;
-            Image = image;
+            Pixels = pixels;
         }
     }
 }

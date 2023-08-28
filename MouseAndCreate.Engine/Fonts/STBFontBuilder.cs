@@ -120,8 +120,7 @@ namespace MouseAndCreate.Fonts
             if (context is not STBFontBuilderContext correctContext)
                 throw new ArgumentNullException(nameof(context));
             StbTrueType.stbtt_PackEnd(correctContext._context);
-            Image32 image = Image32.FromAlpha(new Vector2i(context.Width, context.Height), correctContext.Data);
-            BitmapFont result = new BitmapFont(correctContext.Width, correctContext.Height, correctContext.Glyphs.ToImmutableDictionary(), image);
+            BitmapFont result = new BitmapFont(correctContext.Width, correctContext.Height, correctContext.Glyphs.ToImmutableDictionary(), correctContext.Data.ToImmutableArray());
             return result;
         }
     }

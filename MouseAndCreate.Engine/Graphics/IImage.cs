@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MouseAndCreate.Rendering;
+using System;
 
 namespace MouseAndCreate.Graphics
 {

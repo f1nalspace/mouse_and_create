@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace MouseAndCreate.Graphics
 {
@@ -94,6 +95,27 @@ namespace MouseAndCreate.Graphics
                 }
             }
             return result;
+        }
+
+        public unsafe static void FlipY(Span<byte> pixels, int width, int height, int components)
+        {
+            int scanline = width * components;
+            byte[] tmpBuffer = new byte[scanline];
+            fixed (byte* pixelBytePtr = pixels)
+            {
+                fixed (byte* tmpBytePtr = tmpBuffer)
+                {
+                    IntPtr tmpPtr = new IntPtr(tmpBytePtr);
+                    IntPtr lowPtr = new IntPtr(pixelBytePtr);
+                    IntPtr highPtr = IntPtr.Add(lowPtr, (height - 1) * scanline);
+                    for (; lowPtr < highPtr; lowPtr += scanline, highPtr -= scanline)
+                    {
+                        Buffer.MemoryCopy(lowPtr.ToPointer(), tmpPtr.ToPointer(), scanline, scanline);
+                        Buffer.MemoryCopy(highPtr.ToPointer(), lowPtr.ToPointer(), scanline, scanline);
+                        Buffer.MemoryCopy(tmpPtr.ToPointer(), highPtr.ToPointer(), scanline, scanline);
+                    }
+                }
+            }
         }
     }
 }

@@ -15,11 +15,11 @@ namespace MouseAndCreate.Graphics
 
         public int Width => Size.X;
         public int Height => Size.Y;
-        public ImageFormat Format => ImageFormat.RGBA;
+        public ImageFormat Format => ImageFormat.Alpha;
         public ReadOnlySpan<byte> Data => _data.AsSpan();
         private ImmutableArray<byte> _data;
 
-        public Image8(int width, int height, ImmutableArray<byte> data, Guid? id = null, string name = null)
+        public Image8(int width, int height, ReadOnlySpan<byte> data, Guid? id = null, string name = null)
         {
             int expectedLen = width * height;
             if (data.Length != expectedLen)
@@ -27,7 +27,7 @@ namespace MouseAndCreate.Graphics
             Id = id ?? Guid.NewGuid();
             Name = name;
             Size = new Vector2i(width, height);
-            _data = data;
+            _data = data.ToImmutableArray();
         }
 
         public void Crop(Vector2i newSize, Vector2i origin)
@@ -51,7 +51,7 @@ namespace MouseAndCreate.Graphics
 
         public Image8 Clone()
         {
-            Image8 result = new Image8(0, 0, ImmutableArray<byte>.Empty, Id, Name);
+            Image8 result = new Image8(0, 0, ReadOnlySpan<byte>.Empty, Id, Name);
             result.Assign(this);
             return result;
         }

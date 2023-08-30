@@ -16,4 +16,6 @@ public readonly struct GlyphInfo
         Offset = offset;
         Advance = advance;
     }
+
+    public override string ToString() => $"[{CodePoint}] {Rect}";
 }

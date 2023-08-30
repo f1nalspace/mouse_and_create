@@ -27,4 +27,6 @@ public readonly struct CodePointRange
     }
 
     public CodePointRange(int single) : this(single, single) { }
+
+    public override string ToString() => $"{Start} - {End}";
 }

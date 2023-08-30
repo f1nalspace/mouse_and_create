@@ -1,6 +1,7 @@
 ﻿using MouseAndCreate.Configurations;
 using MouseAndCreate.Fonts;
 using MouseAndCreate.Frames;
+using MouseAndCreate.Graphics;
 using MouseAndCreate.Input;
 using MouseAndCreate.Objects;
 using MouseAndCreate.Platform;
@@ -50,6 +51,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
     protected ITexture _mouseArrowTexture = null;
     protected ITexture _testTexture = null;
+    protected IFontTexture _defaultFont = null;
 
     public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)
     {
@@ -81,9 +83,12 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
         IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
-        IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(2048, 2048);
-        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 40, new[] { CodePointRange.BasicLatin });
-        using BitmapFont fontBitmap = fontBuilder.End(builderCtx);
+        IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(512, 512);
+        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 32, new[] { CodePointRange.BasicLatin });
+        using BitmapFont fontBitmap = fontBuilder.End(builderCtx, ImageFlags.FlipY);
+        byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, true);
+        TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
+        _defaultFont = _renderer.LoadFont("SulphurPoint", fontBitmap, textureData);
     }
 
     private void ChangeFrameById(Guid id)
@@ -214,7 +219,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         Matrix4 viewProject = view * projection;
 
         _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.DarkSlateGray);
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _testTexture, Color4.White);
+        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _defaultFont, Color4.White);
 
         _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
         _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);

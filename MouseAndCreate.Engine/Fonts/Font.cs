@@ -14,11 +14,11 @@ public class Font : IFont
     public float FontSize { get; }
     public float LineAdvance { get; }
 
-    internal Font(float fontSize, float lineAdvance, ImmutableDictionary<int, GlyphInfo> glyphs)
+    internal Font(float fontSize, float lineAdvance, IReadOnlyDictionary<int, GlyphInfo> glyphs)
     {
         if (glyphs is null)
             throw new ArgumentNullException(nameof(glyphs));
-        _glyphs = glyphs;
+        _glyphs = glyphs.ToImmutableDictionary();
         FontSize = fontSize;
         LineAdvance = lineAdvance;
     }

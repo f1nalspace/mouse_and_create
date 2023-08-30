@@ -19,6 +19,9 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         public byte[] Data => _data;
         private readonly byte[] _data;
 
+        public float MaxFontSize { get; set; }
+        public float MaxLineGap { get; set; }
+
         internal readonly StbTrueType.stbtt_pack_context _context;
 
         public IReadOnlyDictionary<int, GlyphInfo> Glyphs => _glyphs;
@@ -28,6 +31,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         {
             Width = width;
             Height = height;
+            MaxFontSize = 0;
+            MaxLineGap = 0;
             _data = new byte[width * height];
             _context = new StbTrueType.stbtt_pack_context();
         }
@@ -78,6 +83,12 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         int ascent, descent, lineGap;
         StbTrueType.stbtt_GetFontVMetrics(fontInfo, &ascent, &descent, &lineGap);
 
+        if (lineGap == 0)
+            lineGap = ascent - descent;
+
+        correctContext.MaxFontSize = Math.Max(correctContext.MaxFontSize, fontSize);
+        correctContext.MaxLineGap = Math.Max(correctContext.MaxLineGap, lineGap * scaleFactor);
+
         foreach (CodePointRange range in ranges)
         {
             if (range.Start > range.End)
@@ -108,13 +119,18 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         }
     }
 
-    public BitmapFont End(IBitmapFontBuilderContext context)
+    public BitmapFont End(IBitmapFontBuilderContext context, ImageFlags flags)
     {
         if (context is not STBBitmapFontBuilderContext correctContext)
             throw new ArgumentNullException(nameof(context));
         StbTrueType.stbtt_PackEnd(correctContext._context);
-        Image8 image = new Image8(correctContext.Width, correctContext.Height, correctContext.Data.ToImmutableArray());
-        BitmapFont result = new BitmapFont(correctContext.Width, correctContext.Height, correctContext.Glyphs.ToImmutableDictionary(), image);
+
+        if (flags.HasFlag(ImageFlags.FlipY))
+            ImageConverter.FlipY(correctContext.Data, correctContext.Width, correctContext.Height, 1);
+
+        Image8 image = new Image8(correctContext.Width, correctContext.Height, correctContext.Data);
+
+        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, correctContext.Glyphs, image);
         return result;
     }
 }

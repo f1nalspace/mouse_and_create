@@ -80,10 +80,10 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         Stream fontStream = FontResources.SulphurPointRegular;
 
         IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
-        IFontBuilder fontBuilder = fontBuilderFactory.Create();
-        IFontBuilderContext builderCtx = fontBuilder.Begin(2048, 2048);
+        IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
+        IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(2048, 2048);
         fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 40, new[] { CodePointRange.BasicLatin });
-        BitmapFont fontBitmap = fontBuilder.End(builderCtx);
+        using BitmapFont fontBitmap = fontBuilder.End(builderCtx);
     }
 
     private void ChangeFrameById(Guid id)

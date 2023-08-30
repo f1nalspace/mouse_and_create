@@ -2,6 +2,6 @@
 {
     public class DefaultFontBuilderFactory : IFontBuilderFactory
     {
-        public IFontBuilder Create() => new STBFontBuilder();
+        public IBitmapFontBuilder Create() => new STBBitmapFontBuilder();
     }
 }

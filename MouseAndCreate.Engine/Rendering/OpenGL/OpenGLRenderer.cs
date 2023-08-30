@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Buffers;
+using MouseAndCreate.Fonts;
 using MouseAndCreate.Graphics;
 using MouseAndCreate.Play;
 using MouseAndCreate.Shaders;
@@ -72,6 +73,11 @@ namespace MouseAndCreate.Rendering.OpenGL
                 throw new ArgumentNullException(nameof(source));
             TextureData data = source.Load(format, flags);
             return LoadTexture(source.Name, data);
+        }
+
+        public IFontTexture LoadFont(string name, IFont font, TextureData textureData)
+        {
+            return new OpenGLFontTexture(name, textureData.Width, textureData.Height, textureData.Format, textureData.Data, font);
         }
 
         public void Init()

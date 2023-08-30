@@ -19,14 +19,14 @@ namespace MouseAndCreate.Graphics
         public ReadOnlySpan<byte> Data => _data.AsSpan();
         private ImmutableArray<byte> _data;
 
-        public Image8(Vector2i size, ImmutableArray<byte> data, Guid? id = null, string name = null)
+        public Image8(int width, int height, ImmutableArray<byte> data, Guid? id = null, string name = null)
         {
-            int expectedLen = size.X * size.Y;
+            int expectedLen = width * height;
             if (data.Length != expectedLen)
-                throw new ArgumentException($"The image '{name}' data length is expected to be '{expectedLen}', but got '{data.Length}'. Please check that the size '{size}' does match the data!", nameof(data));
+                throw new ArgumentException($"The image '{name}' data length is expected to be '{expectedLen}', but got '{data.Length}'. Please check that the size '{width} x {height}' does match the data!", nameof(data));
             Id = id ?? Guid.NewGuid();
             Name = name;
-            Size = size;
+            Size = new Vector2i(width, height);
             _data = data;
         }
 
@@ -51,7 +51,7 @@ namespace MouseAndCreate.Graphics
 
         public Image8 Clone()
         {
-            Image8 result = new Image8(Vector2i.Zero, ImmutableArray<byte>.Empty, Id, Name);
+            Image8 result = new Image8(0, 0, ImmutableArray<byte>.Empty, Id, Name);
             result.Assign(this);
             return result;
         }

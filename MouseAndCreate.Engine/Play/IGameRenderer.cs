@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace MouseAndCreate.Rendering
+namespace MouseAndCreate.Play
 {
     public interface IGameRenderer
     {

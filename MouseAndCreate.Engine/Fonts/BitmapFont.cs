@@ -1,23 +1,28 @@
 ﻿using MouseAndCreate.Graphics;
+using System;
 using System.Collections.Immutable;
 
-namespace MouseAndCreate.Fonts
+namespace MouseAndCreate.Fonts;
+
+public class BitmapFont : Font
 {
-    public class BitmapFont
+    public Image8 Image { get; }
+
+    internal BitmapFont(float fontSize, float lineAdvance, ImmutableDictionary<int, GlyphInfo> glyphs, Image8 image) : base(fontSize, lineAdvance, glyphs)
     {
-        // https://github.com/StbSharp/StbTrueTypeSharp/blob/master/samples/StbTrueTypeSharp.MonoGame.Test/FontBaker.cs
+        Image = image ?? throw new ArgumentNullException(nameof(image));
+    }
 
-        public ImmutableDictionary<int, GlyphInfo> Glyphs { get; }
-        public ImmutableArray<byte> Pixels { get; }
-        public int Width { get; }
-        public int Height { get; }
+    private bool _disposed = false;
 
-        internal BitmapFont(int width, int height, ImmutableDictionary<int, GlyphInfo> glyphs, ImmutableArray<byte> pixels)
+    protected override void Dispose(bool disposing)
+    {
+        if (!_disposed)
         {
-            Width = width;
-            Height = height;
-            Glyphs = glyphs;
-            Pixels = pixels;
+            if (disposing)
+                Image.Dispose();
+            _disposed = true;
         }
+        base.Dispose(disposing);
     }
 }

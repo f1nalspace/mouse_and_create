@@ -1,7 +1,6 @@
-﻿namespace MouseAndCreate.Fonts
+﻿namespace MouseAndCreate.Fonts;
+
+public interface IFontBuilderFactory
 {
-    public interface IFontBuilderFactory
-    {
-        IFontBuilder Create();
-    }
+    IBitmapFontBuilder Create();
 }

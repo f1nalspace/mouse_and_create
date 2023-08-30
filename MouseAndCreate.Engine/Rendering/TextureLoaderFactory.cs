@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MouseAndCreate.Graphics;
+using System;
 using System.IO;
 
 namespace MouseAndCreate.Rendering
@@ -17,7 +18,7 @@ namespace MouseAndCreate.Rendering
             };
         }
 
-        public TextureData Load(ReadOnlySpan<byte> data, TextureFormat format, TextureLoadFlags flags)
+        public TextureData Load(ReadOnlySpan<byte> data, TextureFormat format, ImageFlags flags)
         {
             foreach (ITextureLoader loader in _loaders)
             {
@@ -28,7 +29,7 @@ namespace MouseAndCreate.Rendering
             return TextureData.Empty;
         }
 
-        public TextureData Load(Stream stream, TextureFormat format, TextureLoadFlags flags)
+        public TextureData Load(Stream stream, TextureFormat format, ImageFlags flags)
         {
             foreach (ITextureLoader loader in _loaders)
             {

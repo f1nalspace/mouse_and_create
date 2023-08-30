@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using MouseAndCreate.Graphics;
 using MouseAndCreate.Play;
 
 namespace MouseAndCreate.Rendering
@@ -25,7 +26,7 @@ namespace MouseAndCreate.Rendering
 
         public override string ToString() => $"{Name} => {Link}";
 
-        public TextureData Load(TextureFormat target, TextureLoadFlags flags)
+        public TextureData Load(TextureFormat target, ImageFlags flags)
         {
             Stream stream = GetStream();
             return TextureLoaderFactory.Instance.Load(stream, target, flags);

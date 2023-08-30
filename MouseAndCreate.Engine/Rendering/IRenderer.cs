@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Fonts;
+using MouseAndCreate.Graphics;
 using OpenTK.Mathematics;
 using System;
 
@@ -10,7 +11,7 @@ namespace MouseAndCreate.Rendering
         void Release();
 
         ITexture LoadTexture(string name, TextureData textureData);
-        ITexture LoadTexture(ITextureSource source, TextureFormat format, TextureLoadFlags flags = TextureLoadFlags.FlipY);
+        ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags);
 
         IFontTexture LoadFont(string name, IFont font, TextureData textureData);
 

@@ -67,7 +67,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             return new OpenGLTexture(name, data.Width, data.Height, data.Format, data.Data);
         }
 
-        public ITexture LoadTexture(ITextureSource source, TextureFormat format, TextureLoadFlags flags = TextureLoadFlags.FlipY)
+        public ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags)
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));

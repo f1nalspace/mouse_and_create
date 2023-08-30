@@ -38,7 +38,7 @@ namespace MouseAndCreate.Rendering
             return new TextureData(image.Width, image.Height, data, TextureFormat.Alpha8);
         }
 
-        public TextureData Load(TextureFormat target, TextureLoadFlags flags)
+        public TextureData Load(TextureFormat target, ImageFlags flags)
         {
             switch (target)
             {

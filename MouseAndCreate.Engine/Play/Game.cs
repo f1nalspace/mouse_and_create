@@ -53,12 +53,16 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     protected ITexture _testTexture = null;
     protected IFontTexture _defaultFont = null;
 
+    private readonly CoordinateSystem _coordinateSystem;
+
     public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)
     {
         _windowMng = windowMng ?? throw new ArgumentNullException(nameof(windowMng));
         _inputQuery = inputQuery ?? throw new ArgumentNullException(nameof(inputQuery));
 
         _setup = (setup ??= GameSetup.Default);
+
+        _coordinateSystem = _setup.CoordinateSystem;
 
         IRendererFactory rendererFactory = new RendererFactory();
         _renderer = rendererFactory.Create(setup.Renderer);
@@ -76,8 +80,10 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         _renderer.Init();
 
-        _mouseArrowTexture = _renderer.LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8);
-        _testTexture = _renderer.LoadTexture(TestTextures.OpenGLTestTexture, TextureFormat.RGBA8);
+        ImageFlags imageFlags = _coordinateSystem == CoordinateSystem.Cartesian ? ImageFlags.FlipY : ImageFlags.None;
+
+        _mouseArrowTexture = _renderer.LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8, imageFlags);
+        _testTexture = _renderer.LoadTexture(TestTextures.OpenGLTestTexture, TextureFormat.RGBA8, imageFlags);
 
         Stream fontStream = FontResources.SulphurPointRegular;
 
@@ -85,7 +91,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
         IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(512, 512);
         fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 32, new[] { CodePointRange.BasicLatin });
-        using BitmapFont fontBitmap = fontBuilder.End(builderCtx, ImageFlags.FlipY);
+        using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
         byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, true);
         TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
         _defaultFont = _renderer.LoadFont("SulphurPoint", fontBitmap, textureData);
@@ -212,7 +218,19 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         float cameraExtendX = cameraSize.X * 0.5f;
         float cameraExtendY = cameraSize.Y * 0.5f;
-        Matrix4 projection = Matrix4.CreateOrthographicOffCenter(-cameraExtendX, cameraExtendX, -cameraExtendY, cameraExtendY, 0.0f, 1.0f);
+
+        Matrix4 projection;
+        float upDirection;
+        if (_coordinateSystem == CoordinateSystem.Cartesian)
+        {
+            projection = Matrix4.CreateOrthographicOffCenter(-cameraExtendX, cameraExtendX, -cameraExtendY, cameraExtendY, 0.0f, 1.0f);
+            upDirection = 1;
+        }
+        else
+        {
+            projection = Matrix4.CreateOrthographicOffCenter(-cameraExtendX, cameraExtendX, cameraExtendY, -cameraExtendY, 0.0f, 1.0f);
+            upDirection = -1;
+        }
 
         Matrix4 view = Matrix4.CreateScale(1, 1, 1) * Matrix4.CreateTranslation(0, 0, 0);
 
@@ -229,7 +247,8 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
             Vector4 vp = new Vector4(viewport.X, viewport.Y, viewport.Width, viewport.Height);
             Vector2 mouseWorld = GameMath.Unproject(CurrentMousePos, view, projection, vp, winSize);
             Vector2 cursorSize = new Vector2(16, 16);
-            _renderer.DrawQuad(viewProject, mouseWorld + new Vector2(cursorSize.X, -cursorSize.Y) * 0.5f, cursorSize, _mouseArrowTexture);
+
+            _renderer.DrawQuad(viewProject, mouseWorld + new Vector2(cursorSize.X, cursorSize.Y * -upDirection) * 0.5f, cursorSize, _mouseArrowTexture);
         }
 
         _renderer.DrawRectangle(viewProject, 0, 0, cameraSize.X, cameraSize.Y, 4.0f * lineScale, Color4.Yellow);

@@ -25,6 +25,8 @@ public class GameSetup : IAssignable<GameSetup>
     public Ratio Aspect { get; set; } = DefaultAspect;
     public string Title { get; set; } = "Game";
     public RendererType Renderer { get; set; } = RendererType.OpenGL;
+    public CoordinateSystem CoordinateSystem { get; set; } = CoordinateSystem.Cartesian;
+    public bool ShowCursor { get; set; } = true;
 
     public Color4 DefaultBackgroundColor { get; set; } = DefaultBackground;
 
@@ -51,5 +53,7 @@ public class GameSetup : IAssignable<GameSetup>
         Aspect = other.Aspect;
         Title = other.Title;
         Renderer = other.Renderer;
+        CoordinateSystem = other.CoordinateSystem;
+        ShowCursor = other.ShowCursor;
     }
 }

@@ -229,7 +229,7 @@ class Program
             Profile = ContextProfile.Compatability,
         });
 
-        window.CursorState = CursorState.Hidden;
+        window.CursorState = setup.ShowCursor ? CursorState.Normal : CursorState.Hidden;
 
         GameWindowInputQuery inputQuery = new GameWindowInputQuery(window);
 

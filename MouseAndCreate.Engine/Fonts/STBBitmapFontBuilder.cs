@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Graphics;
+using MouseAndCreate.Types;
 using OpenTK.Mathematics;
 using StbTrueTypeSharp;
 using System;
@@ -89,6 +90,10 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         correctContext.MaxFontSize = Math.Max(correctContext.MaxFontSize, fontSize);
         correctContext.MaxLineGap = Math.Max(correctContext.MaxLineGap, lineGap * scaleFactor);
 
+        float invWidth = 1.0f / (float)correctContext.Width;
+        float invHeight = 1.0f / (float)correctContext.Width;
+        Vector2 invSize = new Vector2(invWidth, invHeight);
+
         foreach (CodePointRange range in ranges)
         {
             if (range.Start > range.End)
@@ -108,11 +113,12 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
                 int codePoint = range.Start + i;
 
-                Vector4i rect = new Vector4i(cd[i].x0, cd[i].y0, cd[i].x1 - cd[i].x0, cd[i].y1 - cd[i].y0);
-                Vector2i offset = new Vector2i((int)cd[i].xoff, (int)Math.Round(yOff));
-                Vector2i advance = new Vector2i((int)Math.Round(cd[i].xadvance), 0);
+                Rect4 rect = new Rect4(cd[i].x0, cd[i].y0, cd[i].x1 - cd[i].x0, cd[i].y1 - cd[i].y0);
+                Rect4 uv = new Rect4(rect.Offset * invSize, rect.Size * invSize);
+                Vector2 offset = new Vector2((int)cd[i].xoff, (int)Math.Round(yOff));
+                Vector2 advance = new Vector2((int)Math.Round(cd[i].xadvance), 0);
 
-                GlyphInfo glyphInfo = new GlyphInfo(codePoint, rect, offset, advance);
+                GlyphInfo glyphInfo = new GlyphInfo(codePoint, rect, uv, offset, advance);
 
                 correctContext._glyphs[codePoint] = glyphInfo;
             }

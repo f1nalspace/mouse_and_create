@@ -9,7 +9,7 @@ namespace MouseAndCreate.Play;
 
 public interface IGame : IDisposable
 {
-    GameSetup Setup { get; }
+    IGameSetup Setup { get; }
 
     Guid ActiveFrameId { get; set; }
     IFrameManager Frames { get; }

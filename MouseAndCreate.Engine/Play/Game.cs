@@ -21,7 +21,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-    private readonly GameSetup _setup;
+    private readonly IGameSetup _setup;
     private readonly IGameObjectManager _gameObjectManager;
     private readonly IFrameManager _frameManager;
     private readonly ICamera _camera;
@@ -32,7 +32,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     protected readonly IWindowManager _windowMng;
     protected readonly IInputQuery _inputQuery;
 
-    public GameSetup Setup => _setup;
+    public IGameSetup Setup => _setup;
     public IGameObjectManager Objects => _gameObjectManager;
     public IFrameManager Frames => _frameManager;
     public ICamera Camera => _camera;

@@ -1,5 +1,5 @@
-﻿using MouseAndCreate.Play;
-using MouseAndCreate.Setups;
+﻿using MouseAndCreate.Configurations;
+using MouseAndCreate.Play;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 
 namespace MouseAndCreate.Configurations;
 
-public class GameSetup : IAssignable<GameSetup>
+public class GameSetup : IAssignable<GameSetup>, IGameSetup
 {
     public const int DefaultWindowWidth = 640;
     public const int DefaultWindowHeight = 480;

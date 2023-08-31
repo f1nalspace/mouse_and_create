@@ -1,5 +1,5 @@
-﻿using MouseAndCreate.Objects;
-using MouseAndCreate.Setups;
+﻿using MouseAndCreate.Configurations;
+using MouseAndCreate.Objects;
 using System;
 
 namespace MouseAndCreate.Frames

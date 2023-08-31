@@ -11,10 +11,10 @@ public readonly struct GlyphInfo
 
     public GlyphInfo(int codePoint, Vector4 rect, Vector2 offset, Vector2 advance)
     {
-        CodePoint = codePoint;
         Rect = rect;
         Offset = offset;
         Advance = advance;
+        CodePoint = codePoint;
     }
 
     public override string ToString() => $"[{CodePoint}] {Rect}";

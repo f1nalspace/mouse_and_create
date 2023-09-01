@@ -21,5 +21,7 @@ namespace MouseAndCreate.Types
         public Rect4(float x, float y, float width, float height) : this(new Vector2(x, y), new Vector2(width, height))
         {
         }
+
+        public Vector4 ToVec4() => new Vector4(Offset.X, Offset.Y, Size.X, Size.Y);
     }
 }

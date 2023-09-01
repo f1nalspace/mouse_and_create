@@ -236,11 +236,14 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         Matrix4 viewProject = view * projection;
 
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.DarkSlateGray);
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _defaultFont, Color4.White);
+        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.Yellow);
+        //_renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _testTexture, Color4.White);
 
         _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
         _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
+
+        _renderer.DrawString(viewProject, new Vector2(0, 0), new Vector2(1, 1), "Hallo Welt!", _defaultFont);
+        //_renderer.DrawChar(viewProject, new Vector3(0, 0, 0), new Vector3(1, 1, 1), 'A', _defaultFont);
 
         if (IsMouseInside)
         {

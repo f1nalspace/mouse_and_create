@@ -100,8 +100,6 @@ namespace MouseAndCreate.Rendering.OpenGL
             }
             extensions.Sort();
 
-            //string extensions = GL.GetString(StringName.Extensions);
-
             CheckForErrors();
 
             Debug.WriteLine("OpenGL infos:");
@@ -245,6 +243,9 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         public void DrawQuad(Matrix4 viewProjection, Vector3 translation, Vector3 scale, ITexture texture, Color4? color = null, Vector4? uvAdjustment = null)
         {
+            if (texture is null)
+                return;
+
             texture.Bind();
 
             _quadShaderTexture.Bind();
@@ -327,6 +328,66 @@ namespace MouseAndCreate.Rendering.OpenGL
             DrawLine(viewProjection, p1, p2, thickness, color);
             DrawLine(viewProjection, p2, p3, thickness, color);
             DrawLine(viewProjection, p3, p0, thickness, color);
+        }
+
+        public void DrawString(Matrix4 viewProjection, Vector3 translation, Vector3 scale, string text, IFontTexture fontTexture, Color4? color = null)
+        {
+            if (text is null || text.Length == 0)
+                return;
+            if (fontTexture is null)
+                return;
+
+            Color4 actualColor = color ?? Color4.White;
+
+            Vector2 scale2 = scale.Xy;
+
+            Vector3 pos = translation;
+            foreach (char c in text)
+            {
+                int codePoint = (int)c;
+                if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
+                {
+                    throw new InvalidDataException($"No glyph for code point '{codePoint}' in font texture '{fontTexture}' found");
+                }
+
+                Rect4 uv = glyph.UV;
+
+                Rect4 rect = glyph.Offset;
+
+                Vector2 offset = rect.Offset * scale2;
+
+                Vector2 size = rect.Size * scale2;
+
+                Vector2 advance = glyph.Advance * scale2;
+
+                Vector3 quadTranslation = pos + new Vector3(offset + size * 0.5f);
+                Vector3 quadSize = new Vector3(size.X, size.Y, scale.Z);
+
+                DrawQuad(viewProjection, quadTranslation, quadSize, fontTexture, actualColor, uv.ToVec4());
+
+                pos += new Vector3(advance.X, 0, 0);
+            }
+        }
+
+        public void DrawChar(Matrix4 viewProjection, Vector3 translation, Vector3 scale, char ch, IFontTexture fontTexture, Color4? color = null)
+        {
+            if (fontTexture is null)
+                return;
+
+            Color4 actualColor = color ?? Color4.White;
+
+            int codePoint = (int)ch;
+            if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
+            {
+                throw new InvalidDataException($"No glyph for code point '{codePoint}' in font texture '{fontTexture}' found");
+            }
+
+            Rect4 uv = glyph.UV;
+            Vector2 size = glyph.Offset.Size * scale.Xy;
+
+            Vector3 quadSize = new Vector3(size.X, size.Y, scale.Z);
+
+            DrawQuad(viewProjection, translation, quadSize, fontTexture, actualColor, uv.ToVec4());
         }
 
         public void CheckForErrors()

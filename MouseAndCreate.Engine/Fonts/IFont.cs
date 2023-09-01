@@ -5,7 +5,7 @@ namespace MouseAndCreate.Fonts;
 
 public interface IFont : IDisposable
 {
-    IReadOnlyDictionary<int, GlyphInfo> Glyphs { get; }
+    IReadOnlyDictionary<int, Glyph> Glyphs { get; }
     float FontSize { get; }
     float LineAdvance { get; }
 }

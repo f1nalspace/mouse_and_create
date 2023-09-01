@@ -7,5 +7,5 @@ public interface IBitmapFontBuilderContext
     int Width { get; }
     int Height { get; }
     byte[] Data { get; }
-    IReadOnlyDictionary<int, GlyphInfo> Glyphs { get; }
+    IReadOnlyDictionary<int, Glyph> Glyphs { get; }
 }

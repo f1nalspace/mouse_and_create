@@ -30,4 +30,7 @@ public static class IRendererExtensions
         => renderer.DrawRectangle(viewProjection, new Vector3(translation), new Vector3(scale), thickness, color);
     public static void DrawRectangle(this IRenderer renderer, Matrix4 viewProjection, float cx, float cy, float sx, float sy, float thickness, Color4 color)
         => renderer.DrawRectangle(viewProjection, new Vector3(cx, cy, 0), new Vector3(sx, sy, 1), thickness, color);
+
+    public static void DrawString(this IRenderer renderer, Matrix4 viewProjection, Vector2 translation, Vector2 scale, string text, IFontTexture fontTexture, Color4? color = null)
+        => renderer.DrawString(viewProjection, new Vector3(translation), new Vector3(scale.X, scale.Y, 1), text, fontTexture, color);
 }

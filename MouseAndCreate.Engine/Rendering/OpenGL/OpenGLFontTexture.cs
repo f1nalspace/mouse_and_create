@@ -7,9 +7,9 @@ namespace MouseAndCreate.Rendering.OpenGL;
 
 class OpenGLFontTexture : OpenGLTexture, IFontTexture
 {
-    private ImmutableDictionary<int, GlyphInfo> _glyphs;
+    private ImmutableDictionary<int, Glyph> _glyphs;
 
-    public IReadOnlyDictionary<int, GlyphInfo> Glyphs => _glyphs;
+    public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
     public float FontSize { get; }
     public float LineAdvance { get; }
 
@@ -29,7 +29,7 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
         if (!_disposed)
         {
             if (disposing)
-                _glyphs = ImmutableDictionary<int, GlyphInfo>.Empty;
+                _glyphs = ImmutableDictionary<int, Glyph>.Empty;
             _disposed = true;
         }
         base.Dispose(disposing);

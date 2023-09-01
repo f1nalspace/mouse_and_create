@@ -4,7 +4,6 @@ using OpenTK.Mathematics;
 using StbTrueTypeSharp;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 
@@ -25,8 +24,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
         internal readonly StbTrueType.stbtt_pack_context _context;
 
-        public IReadOnlyDictionary<int, GlyphInfo> Glyphs => _glyphs;
-        internal readonly Dictionary<int, GlyphInfo> _glyphs = new Dictionary<int, GlyphInfo>();
+        public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
+        internal readonly Dictionary<int, Glyph> _glyphs = new Dictionary<int, Glyph>();
 
         public STBBitmapFontBuilderContext(int width, int height)
         {
@@ -45,6 +44,7 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         fixed (byte* pixelsPtr = context.Data)
         {
             StbTrueType.stbtt_PackBegin(context._context, pixelsPtr, width, height, width, 1, null);
+            StbTrueType.stbtt_PackSetOversampling(context._context, 2, 2);
         }
         return context;
     }
@@ -108,19 +108,21 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
             for (int i = 0; i < cd.Length; ++i)
             {
-                float yOff = cd[i].yoff;
-                yOff += ascent * scaleFactor;
+                float x0 = cd[i].xoff;
+                float x1 = cd[i].xoff2;
+                float y0 = cd[i].yoff;
+                float y1 = cd[i].yoff2;
 
                 int codePoint = range.Start + i;
 
                 Rect4 rect = new Rect4(cd[i].x0, cd[i].y0, cd[i].x1 - cd[i].x0, cd[i].y1 - cd[i].y0);
-                Rect4 uv = new Rect4(rect.Offset * invSize, rect.Size * invSize);
-                Vector2 offset = new Vector2((int)cd[i].xoff, (int)Math.Round(yOff));
-                Vector2 advance = new Vector2((int)Math.Round(cd[i].xadvance), 0);
+                Rect4 uv = new Rect4(rect.Offset.X * invSize.X, rect.Offset.Y * invSize.Y, rect.Size.X * invSize.X, rect.Size.Y * invSize.Y);
+                Rect4 offset = new Rect4(x0, y0, x1 - x0, y1 - y0);
+                Vector2 advance = new Vector2(cd[i].xadvance, 0);
 
-                GlyphInfo glyphInfo = new GlyphInfo(codePoint, rect, uv, offset, advance);
+                Glyph glyph = new Glyph(codePoint, offset, uv, advance);
 
-                correctContext._glyphs[codePoint] = glyphInfo;
+                correctContext._glyphs[codePoint] = glyph;
             }
         }
     }
@@ -136,7 +138,46 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
         Image8 image = new Image8(correctContext.Width, correctContext.Height, correctContext.Data);
 
-        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, correctContext.Glyphs, image);
+        Dictionary<int, Glyph> newGlyphs = new Dictionary<int, Glyph>();
+        float invWidth = 1.0f / (float)correctContext.Width;
+        float invHeight = 1.0f / (float)correctContext.Height;
+
+        // Get smallest Y offset
+        float minOffsetY = float.MaxValue;
+        foreach (KeyValuePair<int, Glyph> glyphPair in context.Glyphs)
+        {
+            Glyph glyph = glyphPair.Value;
+            if (glyph.Offset.Y < minOffsetY)
+                minOffsetY = glyph.Offset.Y;
+        }
+
+        foreach (KeyValuePair<int, Glyph> glyphPair in context.Glyphs)
+        {
+            int key = glyphPair.Key;
+            Glyph oldGlyph = glyphPair.Value;
+
+            Vector2 uSize = oldGlyph.UV.Size;
+            Vector2 uOffset = oldGlyph.UV.Offset;
+            Rect4 uv;
+            if (flags.HasFlag(ImageFlags.FlipY))
+                uv = new Rect4(uOffset.X, (1.0f - uOffset.Y - uSize.Y), uSize.X, uSize.Y);
+            else
+                uv = oldGlyph.UV;
+
+            Vector2 rsize = oldGlyph.Offset.Size;
+
+            Vector2 roffset;
+            if (flags.HasFlag(ImageFlags.FlipY))
+                roffset = oldGlyph.Offset.Offset * new Vector2(1, -1) + new Vector2(0, -rsize.Y);
+            else
+                roffset = oldGlyph.Offset.Offset;
+
+            Glyph newGlyph = new Glyph(oldGlyph.CodePoint, new Rect4(roffset, rsize), uv, oldGlyph.Advance);
+            newGlyphs.Add(key, newGlyph);
+        }
+
+        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, newGlyphs, image);
+
         return result;
     }
 }

@@ -8,13 +8,13 @@ public class Font : IFont
 {
     // https://github.com/StbSharp/StbTrueTypeSharp/blob/master/samples/StbTrueTypeSharp.MonoGame.Test/FontBaker.cs
 
-    private ImmutableDictionary<int, GlyphInfo> _glyphs;
+    private ImmutableDictionary<int, Glyph> _glyphs;
 
-    public IReadOnlyDictionary<int, GlyphInfo> Glyphs => _glyphs;
+    public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
     public float FontSize { get; }
     public float LineAdvance { get; }
 
-    internal Font(float fontSize, float lineAdvance, IReadOnlyDictionary<int, GlyphInfo> glyphs)
+    internal Font(float fontSize, float lineAdvance, IReadOnlyDictionary<int, Glyph> glyphs)
     {
         if (glyphs is null)
             throw new ArgumentNullException(nameof(glyphs));
@@ -29,7 +29,7 @@ public class Font : IFont
         if (!_disposed)
         {
             if (disposing)
-                _glyphs = ImmutableDictionary<int, GlyphInfo>.Empty;
+                _glyphs = ImmutableDictionary<int, Glyph>.Empty;
             _disposed = true;
         }
     }

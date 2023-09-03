@@ -90,7 +90,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
         IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
         IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(512, 512);
-        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 32, new[] { CodePointRange.BasicLatin });
+        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 16, new[] { CodePointRange.BasicLatin });
         using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
         byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, false);
         TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
@@ -242,7 +242,13 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
         _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
 
-        _renderer.DrawString(viewProject, new Vector2(0, 0), new Vector2(1, 1), "Hallo Welt!", _defaultFont);
+        string testText = "Hallo Welt!";
+        Vector2 testTextSize = _renderer.MeasureString(testText, _defaultFont);
+        Vector2 testTextPos = new Vector2(0, 0) + testTextSize * 0.5f;
+
+        _renderer.DrawRectangle(viewProject, testTextPos, testTextSize, 2.0f * lineScale, Color4.GreenYellow);
+
+        _renderer.DrawString(viewProject, new Vector2(0, 0), testText, _defaultFont);
 
         if (IsMouseInside)
         {

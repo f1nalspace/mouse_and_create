@@ -5,18 +5,18 @@ namespace MouseAndCreate.Fonts;
 
 public readonly struct Glyph
 {
-    public Rect4 Offset { get; }
+    public Rect4 Bounds { get; }
     public Rect4 UV { get; }
-    public Vector2 Advance { get; }
+    public Vector3 Advance { get; }
     public int CodePoint { get; }
 
-    public Glyph(int codePoint, Rect4 offset, Rect4 uv, Vector2 advance)
+    public Glyph(int codePoint, Rect4 offset, Rect4 uv, Vector3 advance)
     {
-        Offset = offset;
+        Bounds = offset;
         UV = uv;
         Advance = advance;
         CodePoint = codePoint;
     }
 
-    public override string ToString() => $"[{CodePoint}] Offset: {Offset}, UV: {UV}, Advance: {Advance}";
+    public override string ToString() => $"[{CodePoint}] Offset: {Bounds}, UV: {UV}, Advance: {Advance}";
 }

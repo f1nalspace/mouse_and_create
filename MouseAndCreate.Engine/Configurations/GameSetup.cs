@@ -22,23 +22,23 @@ public class GameSetup : IAssignable<GameSetup>, IGameSetup
 
     public Vector2i WindowSize { get; set; } = DefaultWindowSize;
     public Vector2 CameraSize { get; set; } = DefaultCameraSize;
+    public Color4 BackgroundColor { get; set; } = DefaultBackground;
     public Ratio Aspect { get; set; } = DefaultAspect;
     public string Title { get; set; } = "Game";
     public RendererType Renderer { get; set; } = RendererType.OpenGL;
-    public CoordinateSystem CoordinateSystem { get; set; } = CoordinateSystem.Pixel;
+    public CoordinateSystem CoordinateSystem { get; set; } = CoordinateSystem.Cartesian;
     public bool ShowCursor { get; set; } = true;
 
-    public Color4 DefaultBackgroundColor { get; set; } = DefaultBackground;
-
-    public GameSetup(Vector2i windowSize, Ratio? aspect = null, string title = "Game")
+    public GameSetup(Vector2i windowSize, Ratio? aspect = null, string title = "Game", CoordinateSystem cordinateSystem = CoordinateSystem.Cartesian)
     {
         WindowSize = windowSize;
         Aspect = aspect ?? new Ratio(WindowSize.X, WindowSize.Y);
         Title = title;
+        CoordinateSystem = cordinateSystem;
     }
 
-    public GameSetup(int width, int height, Ratio? aspect = null, string title = "Game") : 
-        this(new Vector2i(width, height), aspect, title)
+    public GameSetup(int width, int height, Ratio? aspect = null, string title = "Game", CoordinateSystem cordinateSystem = CoordinateSystem.Cartesian) : 
+        this(new Vector2i(width, height), aspect, title, cordinateSystem)
     {
     }
 
@@ -50,6 +50,7 @@ public class GameSetup : IAssignable<GameSetup>, IGameSetup
             return;
         WindowSize = other.WindowSize;
         CameraSize = other.CameraSize;
+        BackgroundColor = other.BackgroundColor;
         Aspect = other.Aspect;
         Title = other.Title;
         Renderer = other.Renderer;

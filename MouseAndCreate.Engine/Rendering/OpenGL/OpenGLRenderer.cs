@@ -330,7 +330,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             DrawLine(viewProjection, p3, p0, thickness, color);
         }
 
-        public void DrawString(Matrix4 viewProjection, Vector3 translation, Vector3 scale, string text, IFontTexture fontTexture, Color4? color = null)
+        public void DrawString(Matrix4 viewProjection, Vector3 translation, string text, IFontTexture fontTexture, float scale = 1.0f, Color4? color = null)
         {
             if (text is null || text.Length == 0)
                 return;
@@ -339,34 +339,151 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             Color4 actualColor = color ?? Color4.White;
 
-            Vector2 scale2 = scale.Xy;
+            Vector2 offset = Vector2.Zero;
+            bool firstGlyphOnLine = true;
 
-            Vector3 pos = translation;
-            foreach (char c in text)
+            float additionalSpacingPerChar = 0 * scale; // TODO(final): Additional char spacing!
+
+            void DrawGlyph(Glyph glyph, int repeat = 1)
             {
-                int codePoint = (int)c;
-                if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
-                {
-                    throw new InvalidDataException($"No glyph for code point '{codePoint}' in font texture '{fontTexture}' found");
-                }
+                Vector3 advance = glyph.Advance;
+                float leftSideBearing = advance.X * scale;
+                float width = advance.Y * scale;
+                float rightSideBearing = advance.Z * scale;
 
                 Rect4 uv = glyph.UV;
 
-                Rect4 rect = glyph.Offset;
+                Vector3 quadSize = new Vector3(glyph.Bounds.Size.X, glyph.Bounds.Size.Y, 0) * scale;
 
-                Vector2 offset = rect.Offset * scale2;
+                for (int i = 0; i < repeat; ++i)
+                {
+                    if (firstGlyphOnLine)
+                    {
+                        offset.X = Math.Max(leftSideBearing, 0);
+                        firstGlyphOnLine = false;
+                    }
+                    else
+                        offset.X += additionalSpacingPerChar + leftSideBearing;
 
-                Vector2 size = rect.Size * scale2;
+                    Vector3 quadTranslation = new Vector3(offset.X, offset.Y, 0);
+                    quadTranslation.X += glyph.Bounds.Offset.X * scale;
+                    quadTranslation.Y += glyph.Bounds.Offset.Y * scale;
+                    quadTranslation += new Vector3(quadSize.X, quadSize.Y, 0) * 0.5f; // Quads are drawn by center, so adjust to move half to the top/right
+                    quadTranslation +=  translation;
 
-                Vector2 advance = glyph.Advance * scale2;
+                    DrawQuad(viewProjection, quadTranslation, quadSize, fontTexture, actualColor, uv.ToVec4());
 
-                Vector3 quadTranslation = pos + new Vector3(offset + size * 0.5f);
-                Vector3 quadSize = new Vector3(size.X, size.Y, scale.Z);
-
-                DrawQuad(viewProjection, quadTranslation, quadSize, fontTexture, actualColor, uv.ToVec4());
-
-                pos += new Vector3(advance.X, 0, 0);
+                    offset.X += width + rightSideBearing;
+                }
             }
+
+            foreach (char c in text)
+            {
+                int codePoint = (int)c;
+
+                if (codePoint == ' ' || codePoint == '\t')
+                {
+                    if (!fontTexture.Glyphs.TryGetValue(32, out Glyph spaceGlyph))
+                        throw new InvalidDataException($"No space glyph in font texture '{fontTexture}' found!");
+                    int numSpaces = codePoint == '\t' ? 4 : 1;
+                    DrawGlyph(spaceGlyph, numSpaces);
+                    continue;
+                }
+
+                if (codePoint == '\n')
+                {
+                    offset.X = 0;
+                    offset.Y += fontTexture.LineAdvance * scale;
+                    firstGlyphOnLine = true;
+                    continue;
+                }
+
+                if (char.IsWhiteSpace((char)codePoint))
+                    continue;
+
+                if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
+                    throw new InvalidDataException($"No glyph for code point '{codePoint}' / char '{(char)codePoint}' in font texture '{fontTexture}' found");
+
+                DrawGlyph(glyph);
+            }
+        }
+
+        public Vector2 MeasureString(string text, IFontTexture fontTexture, float scale = 1.0f)
+        {
+            if (text is null || text.Length == 0)
+                return Vector2.Zero;
+            if (fontTexture is null)
+                return Vector2.Zero;
+
+            Vector2 offset = Vector2.Zero;
+            float width = 0.0f;
+            float finalLineHeight = fontTexture.LineAdvance;
+            bool firstGlyphOnLine = false;
+
+            float additionalSpacingPerChar = 0; // TODO(final): Additional char spacing!
+
+            void ProcessGlyph(Glyph glyph, int repeat = 1)
+            {
+                Vector3 advance = glyph.Advance;
+                float leftSideBearing = advance.X;
+                float charWidth = advance.Y;
+                float rightSideBearing = advance.Z;
+                for (int i = 0; i < repeat; ++i) 
+                {
+                    if (firstGlyphOnLine)
+                    {
+                        offset.X = Math.Max(leftSideBearing, 0);
+                        firstGlyphOnLine = false;
+                    }
+                    else
+                        offset.X += additionalSpacingPerChar + leftSideBearing;
+
+                    offset.X += charWidth;
+
+                    float proposedWidth = offset.X + Math.Max(rightSideBearing, 0);
+                    if (proposedWidth > width)
+                        width = proposedWidth;
+
+                    offset.X += rightSideBearing;
+                    if (glyph.Bounds.Height > finalLineHeight)
+                        finalLineHeight = glyph.Bounds.Height;
+                }
+            }
+
+            foreach (char c in text)
+            {
+                int codePoint = (int)c;
+
+                if (codePoint == ' ' || codePoint == '\t')
+                {
+                    if (!fontTexture.Glyphs.TryGetValue(32, out Glyph spaceGlyph))
+                        throw new InvalidDataException($"No space glyph in font texture '{fontTexture}' found!");
+                    int numSpaces = codePoint == '\t' ? 4 : 1;
+                    ProcessGlyph(spaceGlyph, numSpaces);
+                    continue;
+                }
+
+                if (codePoint == '\n')
+                {
+                    finalLineHeight += fontTexture.LineAdvance * scale;
+                    firstGlyphOnLine = true;
+                    offset.X = 0;
+                    offset.Y += fontTexture.LineAdvance * scale;
+                    continue;
+                }
+
+                if (char.IsWhiteSpace((char)codePoint))
+                    continue;
+
+                if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
+                    throw new InvalidDataException($"No glyph for code point '{codePoint}' / char '{(char)codePoint}' in font texture '{fontTexture}' found!");
+
+                ProcessGlyph(glyph);
+            }
+
+            Vector2 result = new Vector2(width, offset.Y + finalLineHeight);
+
+            return result;
         }
 
         public void CheckForErrors()

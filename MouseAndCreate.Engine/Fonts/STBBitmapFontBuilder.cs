@@ -91,8 +91,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         correctContext.MaxLineGap = Math.Max(correctContext.MaxLineGap, lineGap * scaleFactor);
 
         float invWidth = 1.0f / (float)correctContext.Width;
-        float invHeight = 1.0f / (float)correctContext.Width;
-        Vector2 invSize = new Vector2(invWidth, invHeight);
+        float invHeight = 1.0f / (float)correctContext.Height;
+        Vector2 texel = new Vector2(invWidth, invHeight);
 
         foreach (CodePointRange range in ranges)
         {
@@ -116,9 +116,9 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
                 int codePoint = range.Start + i;
 
                 Rect4 rect = new Rect4(cd[i].x0, cd[i].y0, cd[i].x1 - cd[i].x0, cd[i].y1 - cd[i].y0);
-                Rect4 uv = new Rect4(rect.Offset.X * invSize.X, rect.Offset.Y * invSize.Y, rect.Size.X * invSize.X, rect.Size.Y * invSize.Y);
+                Rect4 uv = new Rect4(rect.Offset.X * texel.X, rect.Offset.Y * texel.Y, rect.Size.X * texel.X, rect.Size.Y * texel.Y);
                 Rect4 offset = new Rect4(x0, y0, x1 - x0, y1 - y0);
-                Vector2 advance = new Vector2(cd[i].xadvance, 0);
+                Vector3 advance = new Vector3(0, rect.Width, cd[i].xadvance - rect.Width);
 
                 Glyph glyph = new Glyph(codePoint, offset, uv, advance);
 
@@ -147,8 +147,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         foreach (KeyValuePair<int, Glyph> glyphPair in context.Glyphs)
         {
             Glyph glyph = glyphPair.Value;
-            if (glyph.Offset.Y < minOffsetY)
-                minOffsetY = glyph.Offset.Y;
+            if (glyph.Bounds.Y < minOffsetY)
+                minOffsetY = glyph.Bounds.Y;
         }
 
         foreach (KeyValuePair<int, Glyph> glyphPair in context.Glyphs)
@@ -164,13 +164,13 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
             else
                 uv = oldGlyph.UV;
 
-            Vector2 rsize = oldGlyph.Offset.Size;
+            Vector2 rsize = oldGlyph.Bounds.Size;
 
             Vector2 roffset;
             if (flags.HasFlag(ImageFlags.FlipY))
-                roffset = oldGlyph.Offset.Offset * new Vector2(1, -1) + new Vector2(0, -rsize.Y);
+                roffset = oldGlyph.Bounds.Offset * new Vector2(1, -1) + new Vector2(0, -rsize.Y);
             else
-                roffset = oldGlyph.Offset.Offset;
+                roffset = oldGlyph.Bounds.Offset;
 
             Glyph newGlyph = new Glyph(oldGlyph.CodePoint, new Rect4(roffset, rsize), uv, oldGlyph.Advance);
             newGlyphs.Add(key, newGlyph);

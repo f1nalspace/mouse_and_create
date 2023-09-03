@@ -22,7 +22,7 @@ namespace MouseAndCreate.Configurations
 
         public FrameSetup(IGameSetup gameSetup) : this(gameSetup.CameraSize * 2, gameSetup.CameraSize, gameSetup.Aspect)
         {
-            BackgroundColor = gameSetup.DefaultBackgroundColor;
+            BackgroundColor = gameSetup.BackgroundColor;
         }
     }
 }

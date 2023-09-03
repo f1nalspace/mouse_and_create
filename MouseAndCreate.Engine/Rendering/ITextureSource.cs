@@ -1,5 +1,4 @@
 ﻿using MouseAndCreate.Graphics;
-using System.IO;
 
 namespace MouseAndCreate.Rendering
 {

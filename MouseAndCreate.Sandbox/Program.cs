@@ -250,7 +250,7 @@ class Program
 
         window.Load += delegate ()
         {
-            _game = new Game(windowMng, inputQuery);
+            _game = new SandboxGame(windowMng, inputQuery);
             IFrame frame = _game.Frames.AddFrame();
             _game.ActiveFrameId = frame.Id;
             _inputMng = _game as IGameInputManager;

@@ -342,18 +342,19 @@ namespace MouseAndCreate.Rendering.OpenGL
             Vector2 offset = Vector2.Zero;
             bool firstGlyphOnLine = true;
 
-            float additionalSpacingPerChar = 0 * scale; // TODO(final): Additional char spacing!
+            float additionalSpacingPerChar = fontTexture.Spacing * scale;
 
             void DrawGlyph(Glyph glyph, int repeat = 1)
             {
                 Vector3 advance = glyph.Advance;
+
                 float leftSideBearing = advance.X * scale;
                 float width = advance.Y * scale;
                 float rightSideBearing = advance.Z * scale;
 
                 Rect4 uv = glyph.UV;
 
-                Vector3 quadSize = new Vector3(glyph.Bounds.Size.X, glyph.Bounds.Size.Y, 0) * scale;
+                Vector3 size = new Vector3(glyph.Bounds.Size.X, glyph.Bounds.Size.Y, 0) * scale;
 
                 for (int i = 0; i < repeat; ++i)
                 {
@@ -368,10 +369,10 @@ namespace MouseAndCreate.Rendering.OpenGL
                     Vector3 quadTranslation = new Vector3(offset.X, offset.Y, 0);
                     quadTranslation.X += glyph.Bounds.Offset.X * scale;
                     quadTranslation.Y += glyph.Bounds.Offset.Y * scale;
-                    quadTranslation += new Vector3(quadSize.X, quadSize.Y, 0) * 0.5f; // Quads are drawn by center, so adjust to move half to the top/right
+                    quadTranslation += new Vector3(size.X, size.Y, 0) * 0.5f; // Quads are drawn by center, so adjust to move by half
                     quadTranslation +=  translation;
 
-                    DrawQuad(viewProjection, quadTranslation, quadSize, fontTexture, actualColor, uv.ToVec4());
+                    DrawQuad(viewProjection, quadTranslation, size, fontTexture, actualColor, uv.ToVec4());
 
                     offset.X += width + rightSideBearing;
                 }
@@ -417,17 +418,20 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             Vector2 offset = Vector2.Zero;
             float width = 0.0f;
-            float finalLineHeight = fontTexture.LineAdvance;
+            float lineAdvance = fontTexture.LineAdvance * scale;
+            float finalLineHeight = lineAdvance;
             bool firstGlyphOnLine = false;
 
-            float additionalSpacingPerChar = 0; // TODO(final): Additional char spacing!
+            float additionalSpacingPerChar = fontTexture.Spacing * scale;
 
             void ProcessGlyph(Glyph glyph, int repeat = 1)
             {
                 Vector3 advance = glyph.Advance;
-                float leftSideBearing = advance.X;
-                float charWidth = advance.Y;
-                float rightSideBearing = advance.Z;
+
+                float leftSideBearing = advance.X * scale;
+                float charWidth = advance.Y * scale;
+                float rightSideBearing = advance.Z * scale;
+
                 for (int i = 0; i < repeat; ++i) 
                 {
                     if (firstGlyphOnLine)
@@ -445,8 +449,11 @@ namespace MouseAndCreate.Rendering.OpenGL
                         width = proposedWidth;
 
                     offset.X += rightSideBearing;
-                    if (glyph.Bounds.Height > finalLineHeight)
-                        finalLineHeight = glyph.Bounds.Height;
+
+                    float height = glyph.Bounds.Height * scale;
+
+                    if (height > finalLineHeight)
+                        finalLineHeight = height;
                 }
             }
 
@@ -465,10 +472,10 @@ namespace MouseAndCreate.Rendering.OpenGL
 
                 if (codePoint == '\n')
                 {
-                    finalLineHeight += fontTexture.LineAdvance * scale;
+                    finalLineHeight += lineAdvance;
                     firstGlyphOnLine = true;
                     offset.X = 0;
-                    offset.Y += fontTexture.LineAdvance * scale;
+                    offset.Y += lineAdvance;
                     continue;
                 }
 

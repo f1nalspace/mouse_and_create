@@ -12,6 +12,7 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
     public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
     public float FontSize { get; }
     public float LineAdvance { get; }
+    public float Spacing { get; }
 
     public OpenGLFontTexture(string name, int width, int height, TextureFormat format, byte[] pixels, IFont font) : base(name, width, height, format, pixels)
     {
@@ -20,6 +21,7 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
         _glyphs = font.Glyphs.ToImmutableDictionary();
         FontSize = font.FontSize;
         LineAdvance = font.LineAdvance;
+        Spacing = font.Spacing;
     }
 
     private bool _disposed = false;

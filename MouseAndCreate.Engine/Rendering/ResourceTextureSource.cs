@@ -5,7 +5,7 @@ using MouseAndCreate.Play;
 
 namespace MouseAndCreate.Rendering
 {
-    class ResourceTextureSource : ITextureSource
+    public class ResourceTextureSource : ITextureSource
     {
         public string Name { get; }
         public string Link { get; }

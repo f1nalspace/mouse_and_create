@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\BitstreamVeraSansMono.ttf" />
+    <None Remove="Fonts\ModernDOS8x16.ttf" />
     <None Remove="Fonts\SulphurPointRegular.ttf" />
     <None Remove="Shaders\shader_line.frag" />
     <None Remove="Shaders\shader_line.vert" />
@@ -22,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Fonts\BitstreamVeraSansMono.ttf" />
+    <EmbeddedResource Include="Fonts\ModernDOS8x16.ttf" />
     <EmbeddedResource Include="Fonts\SulphurPointRegular.ttf" />
     <EmbeddedResource Include="Textures\mouse_arrow.png" />
   </ItemGroup>

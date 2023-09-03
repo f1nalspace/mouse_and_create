@@ -49,11 +49,20 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     public Vector2 CurrentMousePos { get; set; } = new Vector2i(-1000, -1000);
     public bool IsMouseInside { get; set; } = true;
 
-    protected ITexture _mouseArrowTexture = null;
-    protected ITexture _testTexture = null;
-    protected IFontTexture _defaultFont = null;
+    protected readonly CoordinateSystem _coordinateSystem;
 
-    private readonly CoordinateSystem _coordinateSystem;
+    protected static IFontTexture LoadFont(IRenderer renderer, string name, Stream fontStream, float fontSize, CodePointRange[] ranges, ImageFlags imageFlags, int textureWidth = 512, int textureHeight = 512)
+    {
+        IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
+        IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
+        IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(textureWidth, textureHeight);
+        fontBuilder.Add(builderCtx, name, fontStream, 0, fontSize, ranges);
+        using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
+        byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, false);
+        TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
+        IFontTexture result = renderer.LoadFont(name, fontBitmap, textureData);
+        return result;
+    }
 
     public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)
     {
@@ -72,7 +81,8 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _frameManager = new FrameManager(this);
 
         _camera = new Camera(setup.CameraSize);
-        _camera.Changed += delegate (ICamera camera) {
+        _camera.Changed += delegate (ICamera camera)
+        {
             RaisePropertyChanged(nameof(Camera));
         };
 
@@ -80,21 +90,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
         _renderer.Init();
 
-        ImageFlags imageFlags = _coordinateSystem == CoordinateSystem.Cartesian ? ImageFlags.FlipY : ImageFlags.None;
 
-        _mouseArrowTexture = _renderer.LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8, imageFlags);
-        _testTexture = _renderer.LoadTexture(TestTextures.OpenGLTestTexture, TextureFormat.RGBA8, imageFlags);
-
-        Stream fontStream = FontResources.SulphurPointRegular;
-
-        IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
-        IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
-        IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(512, 512);
-        fontBuilder.Add(builderCtx, "SulphurPointRegular", fontStream, 0, 16, new[] { CodePointRange.BasicLatin });
-        using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
-        byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, false);
-        TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
-        _defaultFont = _renderer.LoadFont("SulphurPoint", fontBitmap, textureData);
     }
 
     private void ChangeFrameById(Guid id)
@@ -186,81 +182,11 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
     public virtual void Render(TimeSpan deltaTime)
     {
-        IFrame frame = null;
-        if (!Guid.Empty.Equals(ActiveFrameId))
-        {
-            frame = Frames.GetFrameById(ActiveFrameId);
-        }
-
-        if (frame is null)
-        {
-            _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
-            _renderer.Clear(Color4.Black);
-            return;
-        }
-
-        Vector2i initialSize = Setup.WindowSize;
-
-        Vector2i winSize = WindowSize;
-
-        Ratio frameAspect = frame.Setup.Aspect;
-
-        Viewport viewport = GameMath.ComputeViewport(winSize, initialSize, frameAspect);
-
-        float lineScale = viewport.Scale;
-
-        _renderer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
-
-        Color4 clearColor = frame.Setup.BackgroundColor;
-        _renderer.Clear(clearColor);
-
-        Vector2 cameraSize = frame.Setup.CameraSize;
-
-        float cameraExtendX = cameraSize.X * 0.5f;
-        float cameraExtendY = cameraSize.Y * 0.5f;
-
-        Matrix4 projection;
-        float upDirection;
-        if (_coordinateSystem == CoordinateSystem.Cartesian)
-        {
-            projection = Matrix4.CreateOrthographicOffCenter(-cameraExtendX, cameraExtendX, -cameraExtendY, cameraExtendY, 0.0f, 1.0f);
-            upDirection = 1;
-        }
-        else
-        {
-            projection = Matrix4.CreateOrthographicOffCenter(-cameraExtendX, cameraExtendX, cameraExtendY, -cameraExtendY, 0.0f, 1.0f);
-            upDirection = -1;
-        }
-
-        Matrix4 view = Matrix4.CreateScale(1, 1, 1) * Matrix4.CreateTranslation(0, 0, 0);
-
-        Matrix4 viewProject = view * projection;
-
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.Yellow);
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _testTexture, Color4.White);
-
-        _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
-        _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
-
-        string testText = "Hallo Welt!";
-        Vector2 testTextSize = _renderer.MeasureString(testText, _defaultFont);
-        Vector2 testTextPos = new Vector2(0, 0) + testTextSize * 0.5f;
-
-        _renderer.DrawRectangle(viewProject, testTextPos, testTextSize, 2.0f * lineScale, Color4.GreenYellow);
-
-        _renderer.DrawString(viewProject, new Vector2(0, 0), testText, _defaultFont);
-
-        if (IsMouseInside)
-        {
-            Vector4 vp = new Vector4(viewport.X, viewport.Y, viewport.Width, viewport.Height);
-            Vector2 mouseWorld = GameMath.Unproject(CurrentMousePos, view, projection, vp, winSize);
-            Vector2 cursorSize = new Vector2(16, 16);
-
-            _renderer.DrawQuad(viewProject, mouseWorld + new Vector2(cursorSize.X, cursorSize.Y * -upDirection) * 0.5f, cursorSize, _mouseArrowTexture);
-        }
-
-        _renderer.DrawRectangle(viewProject, 0, 0, cameraSize.X, cameraSize.Y, 4.0f * lineScale, Color4.Yellow);
+        _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
+        _renderer.Clear(Color4.Black);
     }
+
+    protected virtual void DisposeResources() { }
 
     private bool _disposed = false;
     public void Dispose()
@@ -273,8 +199,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
             _frameManager.ClearFrames();
             _gameObjectManager.ClearObjects();
 
-            _testTexture?.Dispose();
-            _mouseArrowTexture?.Dispose();
+            DisposeResources();
 
             _renderer.Dispose();
 

@@ -13,14 +13,16 @@ public class Font : IFont
     public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
     public float FontSize { get; }
     public float LineAdvance { get; }
+    public float Spacing { get; }
 
-    internal Font(float fontSize, float lineAdvance, IReadOnlyDictionary<int, Glyph> glyphs)
+    internal Font(float fontSize, float lineAdvance, float spacing, IReadOnlyDictionary<int, Glyph> glyphs)
     {
         if (glyphs is null)
             throw new ArgumentNullException(nameof(glyphs));
         _glyphs = glyphs.ToImmutableDictionary();
         FontSize = fontSize;
         LineAdvance = lineAdvance;
+        Spacing = spacing;
     }
 
     private bool _disposed = false;

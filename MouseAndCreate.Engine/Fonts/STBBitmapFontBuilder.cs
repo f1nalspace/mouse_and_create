@@ -21,16 +21,18 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
         public float MaxFontSize { get; set; }
         public float MaxLineGap { get; set; }
+        public float Spacing { get; }
 
         internal readonly StbTrueType.stbtt_pack_context _context;
 
         public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
         internal readonly Dictionary<int, Glyph> _glyphs = new Dictionary<int, Glyph>();
 
-        public STBBitmapFontBuilderContext(int width, int height)
+        public STBBitmapFontBuilderContext(int width, int height, float spacing)
         {
             Width = width;
             Height = height;
+            Spacing = spacing;
             MaxFontSize = 0;
             MaxLineGap = 0;
             _data = new byte[width * height];
@@ -38,9 +40,9 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         }
     }
 
-    public IBitmapFontBuilderContext Begin(int width, int height)
+    public IBitmapFontBuilderContext Begin(int width, int height, float spacing = 0)
     {
-        STBBitmapFontBuilderContext context = new STBBitmapFontBuilderContext(width, height);
+        STBBitmapFontBuilderContext context = new STBBitmapFontBuilderContext(width, height, spacing);
         fixed (byte* pixelsPtr = context.Data)
         {
             StbTrueType.stbtt_PackBegin(context._context, pixelsPtr, width, height, width, 1, null);
@@ -176,7 +178,7 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
             newGlyphs.Add(key, newGlyph);
         }
 
-        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, newGlyphs, image);
+        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, correctContext.Spacing, newGlyphs, image);
 
         return result;
     }

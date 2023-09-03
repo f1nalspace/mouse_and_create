@@ -369,27 +369,6 @@ namespace MouseAndCreate.Rendering.OpenGL
             }
         }
 
-        public void DrawChar(Matrix4 viewProjection, Vector3 translation, Vector3 scale, char ch, IFontTexture fontTexture, Color4? color = null)
-        {
-            if (fontTexture is null)
-                return;
-
-            Color4 actualColor = color ?? Color4.White;
-
-            int codePoint = (int)ch;
-            if (!fontTexture.Glyphs.TryGetValue(codePoint, out Glyph glyph))
-            {
-                throw new InvalidDataException($"No glyph for code point '{codePoint}' in font texture '{fontTexture}' found");
-            }
-
-            Rect4 uv = glyph.UV;
-            Vector2 size = glyph.Offset.Size * scale.Xy;
-
-            Vector3 quadSize = new Vector3(size.X, size.Y, scale.Z);
-
-            DrawQuad(viewProjection, translation, quadSize, fontTexture, actualColor, uv.ToVec4());
-        }
-
         public void CheckForErrors()
         {
             StringBuilder s = new StringBuilder();

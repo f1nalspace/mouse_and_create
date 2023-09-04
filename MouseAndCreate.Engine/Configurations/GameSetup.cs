@@ -26,7 +26,7 @@ public class GameSetup : IAssignable<GameSetup>, IGameSetup
     public Ratio Aspect { get; set; } = DefaultAspect;
     public string Title { get; set; } = "Game";
     public RendererType Renderer { get; set; } = RendererType.OpenGL;
-    public CoordinateSystem CoordinateSystem { get; set; } = CoordinateSystem.Cartesian;
+    public CoordinateSystem CoordinateSystem { get; set; } = CoordinateSystem.Pixel;
     public bool ShowCursor { get; set; } = true;
 
     public GameSetup(Vector2i windowSize, Ratio? aspect = null, string title = "Game", CoordinateSystem cordinateSystem = CoordinateSystem.Cartesian)

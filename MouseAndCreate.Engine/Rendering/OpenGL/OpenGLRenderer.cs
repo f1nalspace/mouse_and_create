@@ -344,6 +344,8 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             float additionalSpacingPerChar = fontTexture.Spacing * scale;
 
+            float lineAdvance = fontTexture.LineAdvance * scale;
+
             void DrawGlyph(Glyph glyph, int repeat = 1)
             {
                 Vector3 advance = glyph.Advance;
@@ -372,6 +374,8 @@ namespace MouseAndCreate.Rendering.OpenGL
                     quadTranslation += new Vector3(size.X, size.Y, 0) * 0.5f; // Quads are drawn by center, so adjust to move by half
                     quadTranslation +=  translation;
 
+                    DrawRectangle(viewProjection, quadTranslation, size, 1.0f, Color4.Cyan);
+
                     DrawQuad(viewProjection, quadTranslation, size, fontTexture, actualColor, uv.ToVec4());
 
                     offset.X += width + rightSideBearing;
@@ -394,7 +398,7 @@ namespace MouseAndCreate.Rendering.OpenGL
                 if (codePoint == '\n')
                 {
                     offset.X = 0;
-                    offset.Y += fontTexture.LineAdvance * scale;
+                    offset.Y += lineAdvance;
                     firstGlyphOnLine = true;
                     continue;
                 }
@@ -418,6 +422,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             Vector2 offset = Vector2.Zero;
             float width = 0.0f;
+            float height = 0.0f;
             float lineAdvance = fontTexture.LineAdvance * scale;
             float finalLineHeight = lineAdvance;
             bool firstGlyphOnLine = false;
@@ -444,7 +449,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
                     offset.X += charWidth;
 
-                    float proposedWidth = offset.X + Math.Max(rightSideBearing, 0);
+                    float proposedWidth = offset.X + rightSideBearing;
                     if (proposedWidth > width)
                         width = proposedWidth;
 
@@ -472,8 +477,9 @@ namespace MouseAndCreate.Rendering.OpenGL
 
                 if (codePoint == '\n')
                 {
-                    finalLineHeight += lineAdvance;
+                    finalLineHeight = lineAdvance;
                     firstGlyphOnLine = true;
+                    height += lineAdvance;
                     offset.X = 0;
                     offset.Y += lineAdvance;
                     continue;
@@ -488,7 +494,7 @@ namespace MouseAndCreate.Rendering.OpenGL
                 ProcessGlyph(glyph);
             }
 
-            Vector2 result = new Vector2(width, offset.Y + finalLineHeight);
+            Vector2 result = new Vector2(width, height + finalLineHeight);
 
             return result;
         }

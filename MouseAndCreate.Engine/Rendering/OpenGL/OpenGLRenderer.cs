@@ -340,6 +340,11 @@ namespace MouseAndCreate.Rendering.OpenGL
             if (fontTexture is null)
                 return;
 
+            Vector2 boxSize = MeasureString(text, fontTexture, scale);
+
+            Vector4 up4 = Vector4.UnitY * viewProjection;
+            Vector2 up = new Vector2(0, Math.Sign(up4.Y));
+
             Color4 actualColor = color ?? Color4.White;
 
             Vector2 offset = Vector2.Zero;
@@ -351,15 +356,16 @@ namespace MouseAndCreate.Rendering.OpenGL
 
             void DrawGlyph(Glyph glyph, int repeat = 1)
             {
-                Vector3 advance = glyph.Advance;
+                Vector3 glyphAdvance = glyph.Advance;
 
-                float leftSideBearing = advance.X * scale;
-                float width = advance.Y * scale;
-                float rightSideBearing = advance.Z * scale;
+                float leftSideBearing = glyphAdvance.X * scale;
+                float width = glyphAdvance.Y * scale;
+                float rightSideBearing = glyphAdvance.Z * scale;
 
-                Rect4 uv = glyph.UV;
+                Rect4 glyphUV = glyph.UV;
 
-                Vector3 size = new Vector3(glyph.Bounds.Size.X, glyph.Bounds.Size.Y, 0) * scale;
+                Vector3 glyphOffset = new Vector3(glyph.Bounds.Offset) * scale;
+                Vector3 glyphSize = new Vector3(glyph.Bounds.Size) * scale;
 
                 for (int i = 0; i < repeat; ++i)
                 {
@@ -371,15 +377,20 @@ namespace MouseAndCreate.Rendering.OpenGL
                     else
                         offset.X += additionalSpacingPerChar + leftSideBearing;
 
-                    Vector3 quadTranslation = new Vector3(offset.X, offset.Y, 0);
-                    quadTranslation.X += glyph.Bounds.Offset.X * scale;
-                    quadTranslation.Y += glyph.Bounds.Offset.Y * scale;
-                    quadTranslation += new Vector3(size.X, size.Y, 0) * 0.5f; // Quads are drawn by center, so adjust to move by half
-                    quadTranslation +=  translation;
+                    Vector3 quadTranslation = translation;
+                    quadTranslation += new Vector3(offset); // Move to current position
+                    quadTranslation += new Vector3(glyphOffset) * scale; // Adjust by offset
+                    quadTranslation += new Vector3(glyphSize) * 0.5f; // Adjust by half the glyph size, so quads are drawn by left/top
 
-                    DrawRectangle(viewProjection, quadTranslation, size, 1.0f, Color4.Cyan);
+                    // When pixel coordinate system, we it down to fit into the text box
+                    // When cartesian coordinate system, we it down to the very bottom
+                    quadTranslation += new Vector3(0, -up.Y, 0) * new Vector3(0, lineAdvance, 0);
 
-                    DrawQuad(viewProjection, quadTranslation, size, fontTexture, actualColor, uv.ToVec4());
+                    quadTranslation += new Vector3(up.X, Math.Max(0, up.Y), 0) * new Vector3(boxSize);
+
+                    DrawRectangle(viewProjection, quadTranslation, glyphSize, 1.0f, Color4.Cyan);
+
+                    DrawQuad(viewProjection, quadTranslation, glyphSize, fontTexture, actualColor, glyphUV.ToVec4());
 
                     offset.X += width + rightSideBearing;
                 }
@@ -401,7 +412,7 @@ namespace MouseAndCreate.Rendering.OpenGL
                 if (codePoint == '\n')
                 {
                     offset.X = 0;
-                    offset.Y += lineAdvance;
+                    offset += -up * new Vector2(0, lineAdvance);
                     firstGlyphOnLine = true;
                     continue;
                 }
@@ -416,7 +427,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             }
         }
 
-        public Vector2 MeasureString(string text, IFontTexture fontTexture, float scale = 1.0f)
+        public Vector2 MeasureString(string text, IFont fontTexture, float scale = 1.0f)
         {
             if (text is null || text.Length == 0)
                 return Vector2.Zero;

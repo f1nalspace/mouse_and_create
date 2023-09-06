@@ -74,7 +74,7 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _coordinateSystem = _setup.CoordinateSystem;
 
         IRendererFactory rendererFactory = new RendererFactory();
-        _renderer = rendererFactory.Create(setup.Renderer);
+        _renderer = rendererFactory.Create(setup.Renderer, _coordinateSystem);
 
         _gameObjectManager = new GameObjectManager();
 

@@ -36,8 +36,11 @@ namespace MouseAndCreate.Rendering.OpenGL
         private Vector2 _viewportSize = Vector2.Zero;
         private Vector2 _lineWidthRange = Vector2.One;
 
-        public OpenGLRenderer()
+        private readonly CoordinateSystem _coordinateSystem;
+
+        public OpenGLRenderer(CoordinateSystem coordinateSystem)
         {
+            _coordinateSystem = coordinateSystem;
         }
 
         public static Stream GetResourceStream(string name)

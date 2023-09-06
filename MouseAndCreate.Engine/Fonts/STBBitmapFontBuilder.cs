@@ -21,6 +21,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
         public float MaxFontSize { get; set; }
         public float MaxLineGap { get; set; }
+        public float MaxDescent { get; set; }
+        public float MaxAscent { get; set; }
         public float Spacing { get; }
 
         internal readonly StbTrueType.stbtt_pack_context _context;
@@ -35,6 +37,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
             Spacing = spacing;
             MaxFontSize = 0;
             MaxLineGap = 0;
+            MaxAscent = 0;
+            MaxDescent = 0;
             _data = new byte[width * height];
             _context = new StbTrueType.stbtt_pack_context();
         }
@@ -91,6 +95,8 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
 
         correctContext.MaxFontSize = Math.Max(correctContext.MaxFontSize, fontSize);
         correctContext.MaxLineGap = Math.Max(correctContext.MaxLineGap, lineGap * scaleFactor);
+        correctContext.MaxAscent = Math.Max(correctContext.MaxAscent, ascent * scaleFactor);
+        correctContext.MaxDescent = Math.Max(correctContext.MaxDescent, descent * scaleFactor);
 
         float invWidth = 1.0f / (float)correctContext.Width;
         float invHeight = 1.0f / (float)correctContext.Height;
@@ -178,8 +184,14 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
             newGlyphs.Add(key, newGlyph);
         }
 
-        BitmapFont result = new BitmapFont(correctContext.MaxFontSize, correctContext.MaxLineGap, correctContext.Spacing, newGlyphs, image);
-
+        BitmapFont result = new BitmapFont(
+            fontSize: correctContext.MaxFontSize,
+            lineAdvance: correctContext.MaxLineGap,
+            spacing: correctContext.Spacing,
+            ascent: correctContext.MaxAscent,
+            descent: correctContext.MaxDescent,
+            glyphs: newGlyphs,
+            image: image);
         return result;
     }
 }

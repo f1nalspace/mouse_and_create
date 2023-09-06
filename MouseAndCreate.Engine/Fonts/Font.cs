@@ -14,8 +14,10 @@ public class Font : IFont
     public float FontSize { get; }
     public float LineAdvance { get; }
     public float Spacing { get; }
+    public float Ascent { get; }
+    public float Descent { get; }
 
-    internal Font(float fontSize, float lineAdvance, float spacing, IReadOnlyDictionary<int, Glyph> glyphs)
+    internal Font(float fontSize, float lineAdvance, float spacing, float ascent, float descent, IReadOnlyDictionary<int, Glyph> glyphs)
     {
         if (glyphs is null)
             throw new ArgumentNullException(nameof(glyphs));
@@ -23,6 +25,8 @@ public class Font : IFont
         FontSize = fontSize;
         LineAdvance = lineAdvance;
         Spacing = spacing;
+        Ascent = ascent;
+        Descent = descent;
     }
 
     private bool _disposed = false;

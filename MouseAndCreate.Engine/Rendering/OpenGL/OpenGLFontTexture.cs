@@ -13,6 +13,8 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
     public float FontSize { get; }
     public float LineAdvance { get; }
     public float Spacing { get; }
+    public float Ascent { get; }
+    public float Descent { get; }
 
     public OpenGLFontTexture(string name, int width, int height, TextureFormat format, byte[] pixels, IFont font) : base(name, width, height, format, pixels)
     {
@@ -22,6 +24,8 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
         FontSize = font.FontSize;
         LineAdvance = font.LineAdvance;
         Spacing = font.Spacing;
+        Ascent = font.Ascent;
+        Descent = font.Descent;
     }
 
     private bool _disposed = false;

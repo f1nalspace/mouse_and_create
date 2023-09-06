@@ -9,4 +9,6 @@ public interface IFont : IDisposable
     float FontSize { get; }
     float LineAdvance { get; }
     float Spacing { get; }
+    float Ascent { get; }
+    float Descent { get; }
 }

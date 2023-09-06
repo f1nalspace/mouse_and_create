@@ -100,7 +100,7 @@ internal class SandboxGame : Game
         renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
         renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
 
-        string testText = "Bitstream Vera Sans";
+        string testText = "Bitstream Vera Sans\nSecond line!";
         Vector2 baseTextPos = new Vector2(5, 5);
         Vector2 testTextSize = renderer.MeasureString(testText, _consoleFont);
         Vector2 testTextPos = baseTextPos + testTextSize * 0.5f;

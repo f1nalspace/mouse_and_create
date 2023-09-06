@@ -5,7 +5,6 @@ namespace MouseAndCreate.Rendering
 {
     public interface ITexture : IResource, IDisposable
     {
-        string Name { get; }
         int Width { get; }
         int Height { get; }
         TextureFormat Format { get; }

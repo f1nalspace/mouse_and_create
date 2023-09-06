@@ -183,7 +183,6 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         }
 
         BitmapFont result = new BitmapFont(
-            id: Guid.NewGuid(),
             fontSize: correctContext.MaxFontSize,
             lineAdvance: correctContext.MaxLineGap,
             spacing: correctContext.Spacing,

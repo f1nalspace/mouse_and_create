@@ -2,8 +2,9 @@
 
 namespace MouseAndCreate.Types
 {
-    public interface IResource
+    public interface IResource : IDisposable
     {
         Guid Id { get; }
+        string Name { get; }
     }
 }

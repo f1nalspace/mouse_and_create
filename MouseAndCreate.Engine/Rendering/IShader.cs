@@ -5,7 +5,6 @@ namespace MouseAndCreate.Rendering
 {
     public interface IShader : IResource, IDisposable
     {
-        string Name { get; }
         void Bind();
         void Unbind();
         bool Attach(params IShaderSource[] sources);

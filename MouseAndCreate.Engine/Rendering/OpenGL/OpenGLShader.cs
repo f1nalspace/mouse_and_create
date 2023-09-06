@@ -7,6 +7,7 @@ namespace MouseAndCreate.Rendering.OpenGL
     class OpenGLShader : IShader
     {
         public Guid Id { get; }
+        public bool IsDisposed => _disposed;
 
         private readonly int _programId;
 
@@ -101,6 +102,8 @@ namespace MouseAndCreate.Rendering.OpenGL
         public int GetAttribLocation(string attribName) => GL.GetAttribLocation(_programId, attribName);
 
         public int GetUniformLocation(string uniformName) => GL.GetUniformLocation(_programId, uniformName);
+
+        public override string ToString() => $"[Shader/{Id}] {Name}";
 
         private bool _disposed = false;
 

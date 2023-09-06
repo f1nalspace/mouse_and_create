@@ -28,6 +28,8 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
         Descent = font.Descent;
     }
 
+    public override string ToString() => $"[FontTexture/{Id}] {Name}";
+
     private bool _disposed = false;
 
     protected override void Dispose(bool disposing)

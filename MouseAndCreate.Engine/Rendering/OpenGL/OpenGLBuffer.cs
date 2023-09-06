@@ -9,6 +9,7 @@ namespace MouseAndCreate.Rendering.OpenGL
         public Guid Id { get; }
         public string Name { get; }
         public BufferUsage Usage { get; }
+        public bool IsDisposed => _disposed;
 
         private readonly int _vbo;
         private readonly int _ebo;
@@ -67,7 +68,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
         }
 
-        public override string ToString() => Name;
+        public override string ToString() => $"[Buffer/{Id}] {Name}";
 
         private bool _disposed = false;
 

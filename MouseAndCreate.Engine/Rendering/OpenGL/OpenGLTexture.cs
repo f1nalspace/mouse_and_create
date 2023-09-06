@@ -9,11 +9,11 @@ class OpenGLTexture : ITexture
     private readonly int _handle;
 
     public Guid Id { get; }
-
     public string Name { get; }
     public int Width { get; }
     public int Height { get; }
     public TextureFormat Format { get; }
+    public bool IsDisposed => _disposed;
 
     public OpenGLTexture(Guid id, string name, int width, int height, TextureFormat format, byte[] pixels)
     {
@@ -63,6 +63,8 @@ class OpenGLTexture : ITexture
         GL.ActiveTexture(TextureUnit.Texture0 + index);
         GL.BindTexture(TextureTarget.Texture2D, 0);
     }
+
+    public override string ToString() => $"[Texture/{Id}] {Name}";
 
     private bool _disposed = false;
 

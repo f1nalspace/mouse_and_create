@@ -210,12 +210,13 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         public void Release()
         {
-            List<IResource> missingResources = _allResources.Except(_internalResources).ToList();
+            List<IResource> missingResources = _allResources.Where(r => !r.IsDisposed).Except(_internalResources).ToList();
             if (missingResources.Count > 0)
             {
                 InvalidDataException exception = new InvalidDataException($"{missingResources.Count} external resources was not disposed!");
                 foreach (IResource missingResource in missingResources)
                     exception.Data.Add(missingResource.Id, missingResource.Name);
+                throw exception;
             }
 
             List<IResource> reversedInternalResources = new List<IResource>(_internalResources);

@@ -84,14 +84,18 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     {
         if (!_isInitialized)
             throw new GameNotInitializedException($"Cannot load texture '{name}' from data '{textureData}'");
-        return _renderer.LoadTexture(Guid.NewGuid(), name, textureData);
+        ITexture result = _renderer.LoadTexture(Guid.NewGuid(), name, textureData);
+        _resources.Add(result);
+        return result;
     }
 
     public ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags)
     {
         if (!_isInitialized)
             throw new GameNotInitializedException($"Cannot load texture from source '{source}'");
-        return _renderer.LoadTexture(Guid.NewGuid(), source, format, flags);
+        ITexture result = _renderer.LoadTexture(Guid.NewGuid(), source, format, flags);
+        _resources.Add(result);
+        return result;
     }
 
     public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)
@@ -147,8 +151,13 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     {
     }
 
-    protected virtual void UnloadContent()
+    private void UnloadContent()
     {
+        List<IResource> reversedResources = new List<IResource>(_resources);
+        reversedResources.Reverse();
+
+        foreach (IResource resource in reversedResources)
+            resource.Dispose();
     }
 
     private void ChangeFrameById(Guid id)

@@ -8,8 +8,9 @@ namespace MouseAndCreate.Rendering.OpenGL
     {
         public Guid Id { get; }
         public string Name { get; }
+        public bool IsDisposed => _disposed;
 
-        private int _va;
+        private readonly int _va;
 
         public OpenGLVertexArray(Guid id, string name)
         {
@@ -34,7 +35,7 @@ namespace MouseAndCreate.Rendering.OpenGL
             GL.BindVertexArray(0);
         }
 
-        public override string ToString() => Name;
+        public override string ToString() => $"[VertexArray/{Id}] {Name}";
 
         private bool _disposed = false;
 

@@ -6,5 +6,6 @@ namespace MouseAndCreate.Types
     {
         Guid Id { get; }
         string Name { get; }
+        bool IsDisposed { get; }
     }
 }

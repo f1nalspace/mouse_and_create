@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MouseAndCreate.Types;
+using System;
 
 namespace MouseAndCreate.Rendering
 {
-    public interface IShader : IDisposable
+    public interface IShader : IResource, IDisposable
     {
         string Name { get; }
         void Bind();

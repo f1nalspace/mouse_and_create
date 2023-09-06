@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MouseAndCreate.Types;
+using System;
 
 namespace MouseAndCreate.Rendering
 {
-    public interface IBuffer : IDisposable
+    public interface IBuffer : IResource, IDisposable
     {
         string Name { get; }
 

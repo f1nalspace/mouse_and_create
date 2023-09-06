@@ -6,21 +6,24 @@ namespace MouseAndCreate.Rendering.OpenGL;
 
 class OpenGLTexture : ITexture
 {
-    private readonly int _id;
+    private readonly int _handle;
+
+    public Guid Id { get; }
 
     public string Name { get; }
     public int Width { get; }
     public int Height { get; }
     public TextureFormat Format { get; }
 
-    public OpenGLTexture(string name, int width, int height, TextureFormat format, byte[] pixels)
+    public OpenGLTexture(Guid id, string name, int width, int height, TextureFormat format, byte[] pixels)
     {
+        Id = id;
         Name = name;
         Width = width;
         Height = height;
         Format = format;
 
-        _id = GL.GenTexture();
+        _handle = GL.GenTexture();
 
         PixelInternalFormat internalFormat = format switch
         {
@@ -36,7 +39,7 @@ class OpenGLTexture : ITexture
             _ => throw new NotSupportedException($"The texture format '{format}' is not supported")
         };
 
-        GL.BindTexture(TextureTarget.Texture2D, _id);
+        GL.BindTexture(TextureTarget.Texture2D, _handle);
 
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -52,7 +55,7 @@ class OpenGLTexture : ITexture
     public void Bind(int index = 0)
     {
         GL.ActiveTexture(TextureUnit.Texture0 + index);
-        GL.BindTexture(TextureTarget.Texture2D, _id);
+        GL.BindTexture(TextureTarget.Texture2D, _handle);
     }
 
     public void Unbind(int index = 0)
@@ -67,7 +70,7 @@ class OpenGLTexture : ITexture
     {
         if (!_disposed)
         {
-            GL.DeleteTexture(_id);
+            GL.DeleteTexture(_handle);
             _disposed = true;
         }
     }

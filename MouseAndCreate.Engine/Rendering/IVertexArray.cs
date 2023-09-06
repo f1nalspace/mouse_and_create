@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MouseAndCreate.Types;
+using System;
 
 namespace MouseAndCreate.Rendering
 {
-    interface IVertexArray : IDisposable
+    interface IVertexArray : IResource, IDisposable
     {
         void VertexAttribFloat(int index, int location, int size, int stride, int offset);
         void Bind();

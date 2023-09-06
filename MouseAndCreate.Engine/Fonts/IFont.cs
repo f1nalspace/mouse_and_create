@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MouseAndCreate.Types;
+using System;
 using System.Collections.Generic;
 
 namespace MouseAndCreate.Fonts;
 
-public interface IFont : IDisposable
+public interface IFont : IResource, IDisposable
 {
     IReadOnlyDictionary<int, Glyph> Glyphs { get; }
     float FontSize { get; }

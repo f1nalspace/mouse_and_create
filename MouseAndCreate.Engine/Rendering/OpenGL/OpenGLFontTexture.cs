@@ -16,7 +16,7 @@ class OpenGLFontTexture : OpenGLTexture, IFontTexture
     public float Ascent { get; }
     public float Descent { get; }
 
-    public OpenGLFontTexture(string name, int width, int height, TextureFormat format, byte[] pixels, IFont font) : base(name, width, height, format, pixels)
+    public OpenGLFontTexture(Guid id, string name, int width, int height, TextureFormat format, byte[] pixels, IFont font) : base(id, name, width, height, format, pixels)
     {
         if (font is null)
             throw new ArgumentNullException(nameof(font));

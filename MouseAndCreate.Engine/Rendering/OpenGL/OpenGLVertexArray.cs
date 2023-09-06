@@ -6,12 +6,14 @@ namespace MouseAndCreate.Rendering.OpenGL
 {
     class OpenGLVertexArray : IVertexArray
     {
+        public Guid Id { get; }
         public string Name { get; }
 
         private int _va;
 
-        public OpenGLVertexArray(string name)
+        public OpenGLVertexArray(Guid id, string name)
         {
+            Id = id;
             Name = name;
             _va = GL.GenVertexArray();
         }

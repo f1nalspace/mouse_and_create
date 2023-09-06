@@ -23,6 +23,8 @@ public interface IGame : IDisposable
 
     event ActiveFrameChangedEventHandler ActiveFrameChanged;
 
+    void Initialize();
+    void Release();
     void Update(TimeSpan deltaTime);
     void Render(TimeSpan deltaTime);
     void Resize(Vector2i newSize);

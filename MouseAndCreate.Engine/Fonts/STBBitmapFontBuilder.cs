@@ -147,8 +147,6 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         Image8 image = new Image8(correctContext.Width, correctContext.Height, correctContext.Data);
 
         Dictionary<int, Glyph> newGlyphs = new Dictionary<int, Glyph>();
-        float invWidth = 1.0f / (float)correctContext.Width;
-        float invHeight = 1.0f / (float)correctContext.Height;
 
         // Get smallest Y offset
         float minOffsetY = float.MaxValue;
@@ -185,6 +183,7 @@ unsafe class STBBitmapFontBuilder : IBitmapFontBuilder
         }
 
         BitmapFont result = new BitmapFont(
+            id: Guid.NewGuid(),
             fontSize: correctContext.MaxFontSize,
             lineAdvance: correctContext.MaxLineGap,
             spacing: correctContext.Spacing,

@@ -6,11 +6,12 @@ namespace MouseAndCreate.Rendering.OpenGL
 {
     class OpenGLBuffer : IBuffer
     {
+        public Guid Id { get; }
         public string Name { get; }
         public BufferUsage Usage { get; }
 
-        private int _vbo;
-        private int _ebo;
+        private readonly int _vbo;
+        private readonly int _ebo;
 
         private static BufferUsageHint GetUsage(BufferUsage usage) => usage switch
         {
@@ -19,8 +20,9 @@ namespace MouseAndCreate.Rendering.OpenGL
             _ => BufferUsageHint.StaticDraw,
         };
 
-        public OpenGLBuffer(string name, float[] vertices, uint[] indices, BufferUsage usage = BufferUsage.Static)
+        public OpenGLBuffer(Guid id, string name, float[] vertices, uint[] indices, BufferUsage usage = BufferUsage.Static)
         {
+            Id = id;
             Name = name;
             Usage = usage;
 

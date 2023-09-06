@@ -51,6 +51,8 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
 
     protected readonly CoordinateSystem _coordinateSystem;
 
+    private volatile bool _isInitialized = false;
+
     protected static IFontTexture LoadFont(IRenderer renderer, string name, Stream fontStream, float fontSize, CodePointRange[] ranges, ImageFlags imageFlags, int textureWidth = 512, int textureHeight = 512)
     {
         IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
@@ -87,10 +89,26 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         };
 
         _inputState = new InputState();
+    }
+
+    public void Initialize()
+    {
+        if (_isInitialized)
+            throw new InvalidOperationException("The game is already initialized");
 
         _renderer.Init();
 
+        _isInitialized = true;
+    }
 
+    public void Release()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("The game was not initialized");
+
+        _renderer.Release();
+
+        _isInitialized = false;
     }
 
     private void ChangeFrameById(Guid id)
@@ -186,7 +204,11 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         _renderer.Clear(Color4.Black);
     }
 
-    protected virtual void DisposeResources() { }
+    protected virtual void DisposeResources() 
+    {
+        if (_isInitialized)
+            Release();
+    }
 
     private bool _disposed = false;
     public void Dispose()

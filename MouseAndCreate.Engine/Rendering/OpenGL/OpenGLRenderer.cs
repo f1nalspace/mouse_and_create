@@ -54,20 +54,20 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         private static IShader LoadShader(string name, params IShaderSource[] sources)
         {
-            OpenGLShader result = new OpenGLShader(name);
+            OpenGLShader result = new OpenGLShader(Guid.NewGuid(), name);
             result.Attach(sources);
             return result;
         }
 
         private static IBuffer LoadBuffer(string name, float[] vertices, uint[] indices, BufferUsage usage = BufferUsage.Static)
         {
-            OpenGLBuffer result = new OpenGLBuffer(name, vertices, indices, usage);
+            OpenGLBuffer result = new OpenGLBuffer(Guid.NewGuid(), name, vertices, indices, usage);
             return result;
         }
 
         public ITexture LoadTexture(string name, TextureData data)
         {
-            return new OpenGLTexture(name, data.Width, data.Height, data.Format, data.Data);
+            return new OpenGLTexture(Guid.NewGuid(), name, data.Width, data.Height, data.Format, data.Data);
         }
 
         public ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags)
@@ -80,7 +80,7 @@ namespace MouseAndCreate.Rendering.OpenGL
 
         public IFontTexture LoadFont(string name, IFont font, TextureData textureData)
         {
-            return new OpenGLFontTexture(name, textureData.Width, textureData.Height, textureData.Format, textureData.Data, font);
+            return new OpenGLFontTexture(Guid.NewGuid(), name, textureData.Width, textureData.Height, textureData.Format, textureData.Data, font);
         }
 
         public void Init()
@@ -129,7 +129,7 @@ namespace MouseAndCreate.Rendering.OpenGL
                 IShader shader = _quadShaderTexture = LoadShader(QuadShaderTexture.Name, QuadShaderTexture.Vertex, QuadShaderTexture.Fragment);
                 IBuffer buffer = _quadBufferTexture = LoadBuffer(QuadBufferTexture.Name, QuadBufferTexture.Vertices, QuadBufferTexture.Indices);
 
-                IVertexArray va = _quadVATexture = new OpenGLVertexArray(QuadBufferTexture.Name);
+                IVertexArray va = _quadVATexture = new OpenGLVertexArray(Guid.NewGuid(), QuadBufferTexture.Name);
                 va.Bind();
                 buffer.UseElements();
                 buffer.UseVertices();
@@ -147,7 +147,7 @@ namespace MouseAndCreate.Rendering.OpenGL
                 IShader shader = _quadShaderColor = LoadShader(QuadShaderColor.Name, QuadShaderColor.Vertex, QuadShaderColor.Fragment);
                 IBuffer buffer = _quadBufferColor = LoadBuffer(QuadBufferColor.Name, QuadBufferColor.Vertices, QuadBufferColor.Indices);
 
-                IVertexArray va = _quadVAColor = new OpenGLVertexArray(QuadBufferColor.Name);
+                IVertexArray va = _quadVAColor = new OpenGLVertexArray(Guid.NewGuid(), QuadBufferColor.Name);
                 va.Bind();
                 buffer.UseElements();
                 buffer.UseVertices();
@@ -171,13 +171,13 @@ namespace MouseAndCreate.Rendering.OpenGL
                 float[] verticesRect = new float[3 * 4];
                 _lineBufferRect = LoadBuffer("LineRect", verticesRect, null, BufferUsage.Stream);
 
-                _lineVAOne = new OpenGLVertexArray("LineOne");
+                _lineVAOne = new OpenGLVertexArray(Guid.NewGuid(), "LineOne");
                 _lineVAOne.Bind();
                 _lineBufferOne.UseVertices();
                 _lineVAOne.VertexAttribFloat(0, positionAttribLocation, 3, 3 * sizeof(float), 0);
                 _lineVAOne.Unbind();
 
-                _lineVARect = new OpenGLVertexArray("LineRect");
+                _lineVARect = new OpenGLVertexArray(Guid.NewGuid(), "LineRect");
                 _lineVARect.Bind();
                 _lineBufferRect.UseVertices();
                 _lineVARect.VertexAttribFloat(0, positionAttribLocation, 3, 3 * sizeof(float), 0);

@@ -11,17 +11,20 @@ public class Font : IFont
     private ImmutableDictionary<int, Glyph> _glyphs;
 
     public IReadOnlyDictionary<int, Glyph> Glyphs => _glyphs;
+
+    public Guid Id { get; }
     public float FontSize { get; }
     public float LineAdvance { get; }
     public float Spacing { get; }
     public float Ascent { get; }
     public float Descent { get; }
 
-    internal Font(float fontSize, float lineAdvance, float spacing, float ascent, float descent, IReadOnlyDictionary<int, Glyph> glyphs)
+    internal Font(Guid id, float fontSize, float lineAdvance, float spacing, float ascent, float descent, IReadOnlyDictionary<int, Glyph> glyphs)
     {
         if (glyphs is null)
             throw new ArgumentNullException(nameof(glyphs));
         _glyphs = glyphs.ToImmutableDictionary();
+        Id = id;
         FontSize = fontSize;
         LineAdvance = lineAdvance;
         Spacing = spacing;

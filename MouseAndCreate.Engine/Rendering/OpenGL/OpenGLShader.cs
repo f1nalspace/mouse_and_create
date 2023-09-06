@@ -6,10 +6,13 @@ namespace MouseAndCreate.Rendering.OpenGL
 {
     class OpenGLShader : IShader
     {
+        public Guid Id { get; }
+
         private readonly int _programId;
 
-        public OpenGLShader(string name)
+        public OpenGLShader(Guid id, string name)
         {
+            Id = id;
             Name = name;
             _programId = GL.CreateProgram();
         }

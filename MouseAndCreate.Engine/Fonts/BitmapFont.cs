@@ -8,7 +8,7 @@ public class BitmapFont : Font
 {
     public Image8 Image { get; }
 
-    internal BitmapFont(Guid id, float fontSize, float lineAdvance, float spacing, float ascent, float descent, IReadOnlyDictionary<int, Glyph> glyphs, Image8 image) : base(id, fontSize, lineAdvance, spacing, ascent, descent, glyphs)
+    internal BitmapFont(float fontSize, float lineAdvance, float spacing, float ascent, float descent, IReadOnlyDictionary<int, Glyph> glyphs, Image8 image) : base(fontSize, lineAdvance, spacing, ascent, descent, glyphs)
     {
         Image = image ?? throw new ArgumentNullException(nameof(image));
     }

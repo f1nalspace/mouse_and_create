@@ -96,13 +96,14 @@ internal class SandboxGame : Game
         _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
         _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
 
-        string testText = "Bitstream Vera Sans\nHallo Welt!";
+        string testText = "Bitstream Vera Sans";
+        Vector2 baseTextPos = new Vector2(5, 5);
         Vector2 testTextSize = _renderer.MeasureString(testText, _consoleFont);
-        Vector2 testTextPos = new Vector2(0, 0) + testTextSize * 0.5f;
+        Vector2 testTextPos = baseTextPos + testTextSize * 0.5f;
 
         _renderer.DrawRectangle(viewProject, testTextPos, testTextSize, 2.0f * lineScale, Color4.GreenYellow);
 
-        _renderer.DrawString(viewProject, new Vector2(0, 0), testText, _consoleFont);
+        _renderer.DrawString(viewProject, baseTextPos, testText, _consoleFont);
 
         if (IsMouseInside)
         {

@@ -68,7 +68,14 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
         byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, false);
         TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
-        IFontTexture result = _renderer.LoadFont(Guid.NewGuid(), name, fontBitmap, textureData);
+        return LoadFont(name, fontBitmap, textureData);
+    }
+
+    public IFontTexture LoadFont(string name, IFont font, TextureData textureData)
+    {
+        if (!_isInitialized)
+            throw new GameNotInitializedException($"Cannot load font '{name}' from font '{name}' and data '{textureData}'");
+        IFontTexture result = _renderer.LoadFont(Guid.NewGuid(), name, font, textureData);
         _resources.Add(result);
         return result;
     }
@@ -85,15 +92,6 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         if (!_isInitialized)
             throw new GameNotInitializedException($"Cannot load texture from source '{source}'");
         return _renderer.LoadTexture(Guid.NewGuid(), source, format, flags);
-    }
-
-    public IFontTexture LoadFont(string name, IFont font, TextureData textureData)
-    {
-        if (!_isInitialized)
-            throw new GameNotInitializedException($"Cannot load font '{name}' from font '{name}' and data '{textureData}'");
-        IFontTexture result = _renderer.LoadFont(Guid.NewGuid(), name, font, textureData);
-        _resources.Add(result);
-        return result;
     }
 
     public Game(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null)

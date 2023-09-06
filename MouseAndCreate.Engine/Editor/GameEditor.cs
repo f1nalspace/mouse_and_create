@@ -28,9 +28,8 @@ namespace MouseAndCreate.Editor
             Camera.Size = Setup.CameraSize;
         }
 
-        public override void Resize(Vector2i newSize)
+        protected override void Resize(Vector2i newSize)
         {
-            base.Resize(newSize);
             Camera.Size = newSize;
         }
 
@@ -44,8 +43,8 @@ namespace MouseAndCreate.Editor
         {
             if (button == MouseButton.Left && _spaceDown && !_mouseMoveActive)
             {
-                _lastMouseMoveCursor = _windowMng.GetCursor();
-                _windowMng.SetCursor(CursorType.Move);
+                _lastMouseMoveCursor = Cursor;
+                Cursor = CursorType.Move;
                 _mouseMoveActive = true;
                 _mouseMoveStart = CurrentMousePos;
             }
@@ -57,7 +56,7 @@ namespace MouseAndCreate.Editor
             {
                 _mouseMoveActive = false;
                 _mouseMoveStart = Vector2.Zero;
-                _windowMng.SetCursor(_lastMouseMoveCursor);
+                Cursor = _lastMouseMoveCursor;
             }
         }
 
@@ -97,7 +96,7 @@ namespace MouseAndCreate.Editor
             }
         }
 
-        public override void Update(TimeSpan deltaTime)
+        protected override void Update(IRenderer renderer, TimeSpan deltaTime)
         {
             if (_mouseMoveActive)
             {
@@ -110,11 +109,11 @@ namespace MouseAndCreate.Editor
             }
         }
 
-        public override void Render(TimeSpan deltaTime)
+        protected override void Render(IRenderer renderer, TimeSpan deltaTime)
         {
-            _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
+            renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
 
-            _renderer.Clear(Color4.LightGray);
+            renderer.Clear(Color4.LightGray);
 
             IFrame frame = Frames.GetFrameById(ActiveFrameId);
 
@@ -126,10 +125,10 @@ namespace MouseAndCreate.Editor
 
                 Matrix4 vp = Camera.ViewProjection;
 
-                _renderer.DrawQuad(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), Color4.White);
-                _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), 0.5f, Color4.Black);
+                renderer.DrawQuad(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), Color4.White);
+                renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(totalSize.X, totalSize.Y), 0.5f, Color4.Black);
 
-                _renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(cameraSize.X, cameraSize.Y), 0.5f, Color4.Blue);
+                renderer.DrawRectangle(vp, new Vector2(0, 0), new Vector2(cameraSize.X, cameraSize.Y), 0.5f, Color4.Blue);
             }
         }
     }

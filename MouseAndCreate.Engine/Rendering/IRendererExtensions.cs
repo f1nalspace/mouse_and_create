@@ -1,14 +1,15 @@
 ﻿using MouseAndCreate.Graphics;
 using OpenTK.Mathematics;
+using System;
 
 namespace MouseAndCreate.Rendering;
 
 public static class IRendererExtensions
 {
-    public static ITexture LoadTexture(this IRenderer renderer, ITextureSource source, TextureFormat target, ImageFlags flags)
+    public static ITexture LoadTexture(this IRenderer renderer, Guid id, ITextureSource source, TextureFormat target, ImageFlags flags)
     {
         TextureData data = source.Load(target, flags);
-        return renderer.LoadTexture(source.Name, data);
+        return renderer.LoadTexture(id, source.Name, data);
     }
 
     public static void DrawQuad(this IRenderer renderer, Matrix4 viewProjection, Vector2 translation, Vector2 scale, Color4 color)

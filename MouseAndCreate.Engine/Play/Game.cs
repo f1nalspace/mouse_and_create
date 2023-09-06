@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Configurations;
+using MouseAndCreate.Exceptions;
 using MouseAndCreate.Fonts;
 using MouseAndCreate.Frames;
 using MouseAndCreate.Graphics;
@@ -10,6 +11,7 @@ using MouseAndCreate.Textures;
 using MouseAndCreate.Types;
 using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -26,17 +28,16 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     private readonly IFrameManager _frameManager;
     private readonly ICamera _camera;
     private readonly InputState _inputState;
-
-    protected readonly IRenderer _renderer;
-
-    protected readonly IWindowManager _windowMng;
-    protected readonly IInputQuery _inputQuery;
+    private readonly IRenderer _renderer;
+    private readonly IWindowManager _windowMng;
+    private readonly IInputQuery _inputQuery;
 
     public IGameSetup Setup => _setup;
     public IGameObjectManager Objects => _gameObjectManager;
     public IFrameManager Frames => _frameManager;
     public ICamera Camera => _camera;
     public InputState InputState => _inputState;
+    public IRenderer Renderer => _renderer;
 
     public Guid ActiveFrameId { get => _activeFrameId; set => ChangeFrameById(value); }
     private Guid _activeFrameId = Guid.Empty;
@@ -48,13 +49,18 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     public Vector2i WindowSize { get; private set; } = Vector2i.Zero;
     public Vector2 CurrentMousePos { get; set; } = new Vector2i(-1000, -1000);
     public bool IsMouseInside { get; set; } = true;
+    public CursorType Cursor { get => _windowMng.GetCursor(); set => _windowMng.SetCursor(value); }
 
     protected readonly CoordinateSystem _coordinateSystem;
 
     private volatile bool _isInitialized = false;
 
-    protected static IFontTexture LoadFont(IRenderer renderer, string name, Stream fontStream, float fontSize, CodePointRange[] ranges, ImageFlags imageFlags, int textureWidth = 512, int textureHeight = 512)
+    private readonly List<IResource> _resources = new List<IResource>();
+
+    public IFontTexture LoadFont(string name, Stream fontStream, float fontSize, CodePointRange[] ranges, ImageFlags imageFlags, int textureWidth = 512, int textureHeight = 512)
     {
+        if (!_isInitialized)
+            throw new GameNotInitializedException($"Cannot load font '{name}' from stream");
         IFontBuilderFactory fontBuilderFactory = new DefaultFontBuilderFactory();
         IBitmapFontBuilder fontBuilder = fontBuilderFactory.Create();
         IBitmapFontBuilderContext builderCtx = fontBuilder.Begin(textureWidth, textureHeight);
@@ -62,7 +68,31 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
         using BitmapFont fontBitmap = fontBuilder.End(builderCtx, imageFlags);
         byte[] rgba = ImageConverter.ConvertAlphaToRGBA(fontBitmap.Image.Width, fontBitmap.Image.Height, fontBitmap.Image.Data, false);
         TextureData textureData = new TextureData(fontBitmap.Image.Width, fontBitmap.Image.Height, rgba, TextureFormat.RGBA8);
-        IFontTexture result = renderer.LoadFont(name, fontBitmap, textureData);
+        IFontTexture result = _renderer.LoadFont(Guid.NewGuid(), name, fontBitmap, textureData);
+        _resources.Add(result);
+        return result;
+    }
+
+    public ITexture LoadTexture(string name, TextureData textureData)
+    {
+        if (!_isInitialized)
+            throw new GameNotInitializedException($"Cannot load texture '{name}' from data '{textureData}'");
+        return _renderer.LoadTexture(Guid.NewGuid(), name, textureData);
+    }
+
+    public ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags)
+    {
+        if (!_isInitialized)
+            throw new GameNotInitializedException($"Cannot load texture from source '{source}'");
+        return _renderer.LoadTexture(Guid.NewGuid(), source, format, flags);
+    }
+
+    public IFontTexture LoadFont(string name, IFont font, TextureData textureData)
+    {
+        if (!_isInitialized)
+            throw new GameNotInitializedException($"Cannot load font '{name}' from font '{name}' and data '{textureData}'");
+        IFontTexture result = _renderer.LoadFont(Guid.NewGuid(), name, font, textureData);
+        _resources.Add(result);
         return result;
     }
 
@@ -94,21 +124,33 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     public void Initialize()
     {
         if (_isInitialized)
-            throw new InvalidOperationException("The game is already initialized");
+            throw new GameAlreadyInitializedException();
 
         _renderer.Init();
 
         _isInitialized = true;
+
+        LoadContent();
     }
 
     public void Release()
     {
         if (!_isInitialized)
-            throw new InvalidOperationException("The game was not initialized");
+            throw new GameNotInitializedException();
+
+        UnloadContent();
 
         _renderer.Release();
 
         _isInitialized = false;
+    }
+
+    protected virtual void LoadContent()
+    {
+    }
+
+    protected virtual void UnloadContent()
+    {
     }
 
     private void ChangeFrameById(Guid id)
@@ -188,26 +230,33 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
     }
     #endregion
 
-    public virtual void Resize(Vector2i newSize)
+    protected virtual void Resize(Vector2i newSize) { }
+
+    void IGame.Resize(Vector2i newSize)
     {
         WindowSize = newSize;
+        Resize(newSize);
     }
 
-    public virtual void Update(TimeSpan deltaTime)
+    protected virtual void Update(IRenderer renderer, TimeSpan deltaTime) { }
+    void IGame.Update(IRenderer renderer, TimeSpan deltaTime)
     {
-
+        if (!_isInitialized)
+            throw new GameNotInitializedException();
+        Update(renderer, deltaTime);
     }
 
-    public virtual void Render(TimeSpan deltaTime)
-    {
-        _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
-        _renderer.Clear(Color4.Black);
-    }
 
-    protected virtual void DisposeResources() 
+    protected virtual void Render(IRenderer renderer, TimeSpan deltaTime) 
     {
-        if (_isInitialized)
-            Release();
+        renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
+        renderer.Clear(Color4.Black);
+    }
+    void IGame.Render(IRenderer renderer, TimeSpan deltaTime)
+    {
+        if (!_isInitialized)
+            throw new GameNotInitializedException();
+        Render(renderer, deltaTime);
     }
 
     private bool _disposed = false;
@@ -221,7 +270,8 @@ public class Game : IGame, IGameInputManager, INotifyPropertyChanged
             _frameManager.ClearFrames();
             _gameObjectManager.ClearObjects();
 
-            DisposeResources();
+            if (_isInitialized)
+                Release();
 
             _renderer.Dispose();
 

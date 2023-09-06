@@ -10,10 +10,10 @@ namespace MouseAndCreate.Rendering
         void Init();
         void Release();
 
-        ITexture LoadTexture(string name, TextureData textureData);
-        ITexture LoadTexture(ITextureSource source, TextureFormat format, ImageFlags flags);
+        ITexture LoadTexture(Guid id, string name, TextureData textureData);
+        ITexture LoadTexture(Guid id, ITextureSource source, TextureFormat format, ImageFlags flags);
 
-        IFontTexture LoadFont(string name, IFont font, TextureData textureData);
+        IFontTexture LoadFont(Guid id, string name, IFont font, TextureData textureData);
 
         void SetViewport(int x, int y, int width, int height);
         void Clear(Color4 clearColor);

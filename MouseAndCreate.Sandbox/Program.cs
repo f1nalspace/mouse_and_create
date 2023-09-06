@@ -239,13 +239,13 @@ class Program
 
         window.RenderFrame += delegate (FrameEventArgs args)
         {
-            _game.Render(TimeSpan.FromSeconds(args.Time));
+            _game.Render(_game.Renderer, TimeSpan.FromSeconds(args.Time));
             window.SwapBuffers();
         };
 
         window.UpdateFrame += delegate (FrameEventArgs args)
         {
-            _game.Update(TimeSpan.FromSeconds(args.Time));
+            _game.Update(_game.Renderer, TimeSpan.FromSeconds(args.Time));
         };
 
         window.Load += delegate ()
@@ -254,10 +254,12 @@ class Program
             IFrame frame = _game.Frames.AddFrame();
             _game.ActiveFrameId = frame.Id;
             _inputMng = _game as IGameInputManager;
+            _game.Initialize();
         };
 
         window.Unload += delegate ()
         {
+            _game.Release();
             _game.Dispose();
             _game = null;
         };

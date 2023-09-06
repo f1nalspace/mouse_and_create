@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using MouseAndCreate.Input;
 using MouseAndCreate.Platform;
+using MouseAndCreate.Play;
 using OpenTK.Mathematics;
 using System;
 
@@ -52,11 +53,16 @@ public class MainViewModel : ViewModelBase, IWindowManager
             _gameInputMng.MouseLeave();
         _gameInputMng.MouseMove(_glControlMousePos);
 
-        Editor.Resize(_glControlSize);
+        IGame game = Editor;
+
+        game.Resize(_glControlSize);
+
+        Editor.Initialize();
     }
 
     private void OnWindowUnloaded()
     {
+        Editor.Release();
         Editor?.Dispose();
         Editor = null;
     }
@@ -75,10 +81,10 @@ public class MainViewModel : ViewModelBase, IWindowManager
 
     public void GameUpdateAndRender(TimeSpan deltaTime)
     {
-        if (Editor is not null)
+        if (Editor is IGame game)
         {
-            Editor.Update(deltaTime);
-            Editor.Render(deltaTime);
+            game.Update(game.Renderer, deltaTime);
+            game.Render(game.Renderer, deltaTime);
         }
     }
 
@@ -86,8 +92,8 @@ public class MainViewModel : ViewModelBase, IWindowManager
     {
         _glControlSize = size;
 
-        if (Editor is not null)
-            Editor.Resize(size);
+        if (Editor is IGame game)
+            game.Resize(size);
     }
 
     public void GameMouseEnter()

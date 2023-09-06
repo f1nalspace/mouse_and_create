@@ -24,21 +24,25 @@ internal class SandboxGame : Game
 
     public SandboxGame(IWindowManager windowMng, IInputQuery inputQuery, GameSetup setup = null) : base(windowMng, inputQuery, setup)
     {
+    }
+
+    protected override void LoadContent()
+    {
         ImageFlags imageFlags = _coordinateSystem == CoordinateSystem.Cartesian ? ImageFlags.FlipY : ImageFlags.None;
 
-        _mouseArrowTexture = _renderer.LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8, imageFlags);
-        _testTexture = _renderer.LoadTexture(DefaultTextures.OpenGLTestTexture, TextureFormat.RGBA8, imageFlags);
+        _mouseArrowTexture = LoadTexture(DefaultTextures.MouseArrow, TextureFormat.RGBA8, imageFlags);
+        _testTexture = LoadTexture(DefaultTextures.OpenGLTestTexture, TextureFormat.RGBA8, imageFlags);
 
         //new[] { CodePointRange.BasicLatin }
 
         using Stream defaultFontStream = DefaultFonts.SulphurPointRegular;
-        _defaultFont = LoadFont(_renderer, nameof(DefaultFonts.SulphurPointRegular), defaultFontStream, 32, new[] { CodePointRange.BasicLatin }, imageFlags);
+        _defaultFont = LoadFont(nameof(DefaultFonts.SulphurPointRegular), defaultFontStream, 32, new[] { CodePointRange.BasicLatin }, imageFlags);
 
         using Stream consoleFontStream = DefaultFonts.BitstreamVeraSansMono;
-        _consoleFont = LoadFont(_renderer, nameof(DefaultFonts.BitstreamVeraSansMono), consoleFontStream, 16, new[] { CodePointRange.BasicLatin }, imageFlags);
+        _consoleFont = LoadFont(nameof(DefaultFonts.BitstreamVeraSansMono), consoleFontStream, 16, new[] { CodePointRange.BasicLatin }, imageFlags);
     }
 
-    public override void Render(TimeSpan deltaTime)
+    protected override void Render(IRenderer renderer, TimeSpan deltaTime)
     {
         IFrame frame = null;
         if (!Guid.Empty.Equals(ActiveFrameId))
@@ -48,8 +52,8 @@ internal class SandboxGame : Game
 
         if (frame is null)
         {
-            _renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
-            _renderer.Clear(Color4.Black);
+            renderer.SetViewport(0, 0, WindowSize.X, WindowSize.Y);
+            renderer.Clear(Color4.Black);
             return;
         }
 
@@ -63,10 +67,10 @@ internal class SandboxGame : Game
 
         float lineScale = viewport.Scale;
 
-        _renderer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
+        renderer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
 
         Color4 clearColor = frame.Setup.BackgroundColor;
-        _renderer.Clear(clearColor);
+        renderer.Clear(clearColor);
 
         Vector2 cameraSize = frame.Setup.CameraSize;
 
@@ -90,20 +94,20 @@ internal class SandboxGame : Game
 
         Matrix4 viewProject = view * projection;
 
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.Yellow);
-        _renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _testTexture, Color4.White);
+        renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, Color4.Yellow);
+        renderer.DrawQuad(viewProject, 0, 0, cameraSize.X, cameraSize.Y, _testTexture, Color4.White);
 
-        _renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
-        _renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
+        renderer.DrawLine(viewProject, -cameraSize.X, 0.0f, cameraSize.X, 0.0f, 2.0f * lineScale, Color4.Red);
+        renderer.DrawLine(viewProject, 0.0f, -cameraSize.Y, 0.0f, cameraSize.Y, 2.0f * lineScale, Color4.Blue);
 
         string testText = "Bitstream Vera Sans";
         Vector2 baseTextPos = new Vector2(5, 5);
-        Vector2 testTextSize = _renderer.MeasureString(testText, _consoleFont);
+        Vector2 testTextSize = renderer.MeasureString(testText, _consoleFont);
         Vector2 testTextPos = baseTextPos + testTextSize * 0.5f;
 
-        _renderer.DrawRectangle(viewProject, testTextPos, testTextSize, 2.0f * lineScale, Color4.GreenYellow);
+        renderer.DrawRectangle(viewProject, testTextPos, testTextSize, 2.0f * lineScale, Color4.GreenYellow);
 
-        _renderer.DrawString(viewProject, baseTextPos, testText, _consoleFont);
+        renderer.DrawString(viewProject, baseTextPos, testText, _consoleFont);
 
         if (IsMouseInside)
         {
@@ -111,18 +115,9 @@ internal class SandboxGame : Game
             Vector2 mouseWorld = GameMath.Unproject(CurrentMousePos, view, projection, vp, winSize);
             Vector2 cursorSize = new Vector2(16, 16);
 
-            _renderer.DrawQuad(viewProject, mouseWorld + new Vector2(cursorSize.X, cursorSize.Y * -upDirection) * 0.5f, cursorSize, _mouseArrowTexture);
+            renderer.DrawQuad(viewProject, mouseWorld + new Vector2(cursorSize.X, cursorSize.Y * -upDirection) * 0.5f, cursorSize, _mouseArrowTexture);
         }
 
-        _renderer.DrawRectangle(viewProject, 0, 0, cameraSize.X, cameraSize.Y, 4.0f * lineScale, Color4.Yellow);
-    }
-
-    protected override void DisposeResources()
-    {
-        _consoleFont?.Dispose();
-        _defaultFont?.Dispose();
-
-        _testTexture?.Dispose();
-        _mouseArrowTexture?.Dispose();
+        renderer.DrawRectangle(viewProject, 0, 0, cameraSize.X, cameraSize.Y, 4.0f * lineScale, Color4.Yellow);
     }
 }

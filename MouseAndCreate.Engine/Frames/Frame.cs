@@ -1,13 +1,14 @@
-﻿using MouseAndCreate.Configurations;
+﻿using DevExpress.Mvvm;
+using MouseAndCreate.Configurations;
 using MouseAndCreate.Objects;
 using System;
 
 namespace MouseAndCreate.Frames
 {
-    public class Frame : IFrame
+    public class Frame : BindableBase, IFrame
     {
         public Guid Id { get; }
-        public string Name { get; set; }
+        public string Name { get => GetValue<string>(); set => SetValue(value); }
 
         public IGameObjectManager ObjectMng => _gameObjectManager;
 
@@ -21,6 +22,8 @@ namespace MouseAndCreate.Frames
             Id = id ?? Guid.NewGuid();
             Name = name;
         }
+
+        public override string ToString() => string.IsNullOrWhiteSpace(Name) ? "Unnamed" : Name;
 
         private bool _disposed = false;
         public void Dispose()

@@ -8,12 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\thumbnail.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DevExpressMvvm" Version="22.1.3" />
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MouseAndCreate.Engine\MouseAndCreate.Engine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\thumbnail.png" />
   </ItemGroup>
 
 </Project>

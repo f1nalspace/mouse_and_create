@@ -24,13 +24,13 @@ using WinMouseButton = System.Windows.Input.MouseButton;
 namespace MouseAndCreate.Editor
 {
     /// <summary>
-    /// Interaction logic for LevelEditorWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class LevelEditorWindow : Window
+    public partial class MainWindow : Window
     {
         private readonly MainViewModel _viewModel;
 
-        public LevelEditorWindow()
+        public MainWindow()
         {
             InitializeComponent();
 

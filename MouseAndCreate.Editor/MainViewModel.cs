@@ -1,33 +1,72 @@
 ﻿using DevExpress.Mvvm;
+using MouseAndCreate.Frames;
 using MouseAndCreate.Input;
 using MouseAndCreate.Platform;
 using MouseAndCreate.Play;
 using OpenTK.Mathematics;
 using System;
+using System.Collections.ObjectModel;
 
 namespace MouseAndCreate.Editor;
 
 public class MainViewModel : ViewModelBase, IWindowManager
 {
-    public DelegateCommand OnWindowLoadedCommand { get; }
-    public DelegateCommand OnWindowUnloadedCommand { get; }
-    public DelegateCommand OnGLReadyCommand { get; }
-
     public GameEditor Editor { get => GetValue<GameEditor>(); private set => SetValue(value); }
-
-    public CursorType Cursor { get => GetValue<CursorType>(); set => SetValue(value); }
-
     private IGameInputManager _gameInputMng = null;
-
     private Vector2i _glControlSize = Vector2i.Zero;
     private Vector2 _glControlMousePos = Vector2.Zero;
     private bool _glControlIsInside = false;
 
+    public CursorType Cursor { get => GetValue<CursorType>(); set => SetValue(value); }
+
+    public int SelectedEditorIndex { get => GetValue<int>(); set => SetValue(value, () => SelectedEditorIndexChanged(value)); }
+
+    public FrameViewModel ActiveFrame { get => GetValue<FrameViewModel>(); set => SetValue(value, () => ActiveFrameChanged(value)); }
+    public ObservableCollection<FrameViewModel> Frames { get; }
+
+    public DelegateCommand OnWindowLoadedCommand { get; }
+    public DelegateCommand OnWindowUnloadedCommand { get; }
+    public DelegateCommand OnGLReadyCommand { get; }
+
+    public DelegateCommand ShowStoryBoardEditorCommand { get; }
+    public DelegateCommand ShowLevelEditorCommand { get; }
+    public DelegateCommand ShowEventEditorCommand { get; }
+
+    public DelegateCommand AddFrameCommand { get; }
+    public DelegateCommand<FrameViewModel> RemoveFrameCommand { get; }
+
     public MainViewModel()
     {
+        Frames = new ObservableCollection<FrameViewModel>();
+
+        SelectedEditorIndex = 0;
         OnWindowLoadedCommand = new DelegateCommand(OnWindowLoaded);
         OnWindowUnloadedCommand = new DelegateCommand(OnWindowUnloaded);
         OnGLReadyCommand = new DelegateCommand(OnGLReady);
+
+        ShowStoryBoardEditorCommand = new DelegateCommand(ShowStoryBoardEditor, CanShowStoryBoardEditor);
+        ShowLevelEditorCommand = new DelegateCommand(ShowLevelEditor, CanShowLevelEditor);
+        ShowEventEditorCommand = new DelegateCommand(ShowEventEditor, CanShowEventEditor);
+
+        AddFrameCommand = new DelegateCommand(AddFrame);
+        RemoveFrameCommand = new DelegateCommand<FrameViewModel>(RemoveFrame, CanRemoveFrame);
+    }
+
+    private void ActiveFrameChanged(FrameViewModel frame)
+    {
+        if (frame is not null)
+        {
+            if (!Editor.ActiveFrameId.Equals(frame.Id))
+            {
+                Editor.ActiveFrameId = frame.Id;
+            }
+        }
+        else
+            Editor.ActiveFrameId = Guid.Empty;
+
+        ShowStoryBoardEditorCommand.RaiseCanExecuteChanged();
+        ShowLevelEditorCommand.RaiseCanExecuteChanged();
+        ShowEventEditorCommand.RaiseCanExecuteChanged();
     }
 
     private void OnWindowLoaded()
@@ -41,10 +80,13 @@ public class MainViewModel : ViewModelBase, IWindowManager
         if (inputQueryService is null)
             throw new Exception("Input query service not registered!");
 
+        Frames.Clear();
+
         Editor = new GameEditor(this, inputQueryService);
 
-        Frames.IFrame frame = Editor.Frames.AddFrame();
-        Editor.ActiveFrameId = frame.Id;
+        //IFrame frame = Editor.Frames.AddFrame();
+        //ActiveFrame = frame;
+        //Frames.Add(new FrameViewModel(frame));
 
         _gameInputMng = Editor as IGameInputManager;
         if (_glControlIsInside)
@@ -58,6 +100,46 @@ public class MainViewModel : ViewModelBase, IWindowManager
         game.Resize(_glControlSize);
 
         Editor.Initialize();
+    }
+
+    private void SelectedEditorIndexChanged(int value)
+    {
+        ShowStoryBoardEditorCommand.RaiseCanExecuteChanged();
+        ShowLevelEditorCommand.RaiseCanExecuteChanged();
+        ShowEventEditorCommand.RaiseCanExecuteChanged();
+    }
+
+    private bool CanShowStoryBoardEditor() => SelectedEditorIndex != 0;
+    private void ShowStoryBoardEditor()
+    {
+        SelectedEditorIndex = 0;
+    }
+
+    private bool CanShowLevelEditor() => SelectedEditorIndex != 1 && ActiveFrame is not null;
+    private void ShowLevelEditor()
+    {
+        SelectedEditorIndex = 1;
+    }
+
+    private bool CanShowEventEditor() => SelectedEditorIndex != 2 && ActiveFrame is not null;
+    private void ShowEventEditor()
+    {
+        SelectedEditorIndex = 2;
+    }
+
+    private void AddFrame()
+    {
+        IFrame frame = Editor.Frames.AddFrame();
+        FrameViewModel frameViewModel = new FrameViewModel(frame);
+        Frames.Add(frameViewModel);
+        ActiveFrame = frameViewModel;
+    }
+
+    private bool CanRemoveFrame(FrameViewModel frame) => frame is not null && Frames.Contains(frame);
+    private void RemoveFrame(FrameViewModel frame)
+    {
+        if (Editor.Frames.RemoveFrame(frame.Id))
+            Frames.Remove(frame);
     }
 
     private void OnWindowUnloaded()

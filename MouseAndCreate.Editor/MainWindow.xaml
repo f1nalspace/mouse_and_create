@@ -1,0 +1,129 @@
+﻿<Window x:Class="MouseAndCreate.Editor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:MouseAndCreate.Editor"
+        mc:Ignorable="d"
+        Title="Mouse &amp; Create" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel, IsDesignTimeCreatable=False}">
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <system:Int32 x:Key="storyBoardEditorIndex">0</system:Int32>
+        <system:Int32 x:Key="levelEditorIndex">1</system:Int32>
+        <system:Int32 x:Key="eventEditorIndex">2</system:Int32>
+        <local:IsIntegerConverter x:Key="invertedIsIntegerConverter" Invert="True" />
+        <local:SizeEventArgsConverter x:Key="sizeEventArgsConverter" />
+        <local:CursorConverter x:Key="cursorConverter" />
+    </Window.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnWindowLoadedCommand}" />
+        <dxmvvm:EventToCommand EventName="Unloaded" Command="{Binding OnWindowUnloadedCommand}" />
+    </dxmvvm:Interaction.Behaviors>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Ribbon Grid.Row="0">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu>
+                    <RibbonApplicationMenuItem Header="Options" />
+                    <RibbonApplicationMenuItem Header="Exit" />
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+            <Ribbon.QuickAccessToolBar>
+                <RibbonQuickAccessToolBar>
+                </RibbonQuickAccessToolBar>
+            </Ribbon.QuickAccessToolBar>
+            <RibbonTab Header="Home">
+                <RibbonGroup Header="Game">
+                    <RibbonButton  Label="New"/>
+                    <RibbonButton  Label="Load"/>
+                    <RibbonButton  Label="Save"/>
+                </RibbonGroup>
+
+                <RibbonGroup Header="Editor">
+                    <RibbonButton Label="Story Board" Command="{Binding ShowStoryBoardEditorCommand}"  />
+                    <RibbonButton Label="Level" Command="{Binding ShowLevelEditorCommand}" CommandParameter="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
+                    <RibbonButton Label="Events" Command="{Binding ShowEventEditorCommand}" CommandParameter="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
+                </RibbonGroup>
+                <RibbonGroup Header="Run">
+                    <RibbonButton Label="Run"/>
+                    <RibbonButton Label="Single Step"/>
+                </RibbonGroup>
+            </RibbonTab>
+            <RibbonTab Header="Edit">
+                
+            </RibbonTab>
+            <RibbonTab Header="Story Board" Visibility="{Binding SelectedEditorIndex, UpdateSourceTrigger=PropertyChanged, Converter={local:IsIntegerConverter}, ConverterParameter={StaticResource storyBoardEditorIndex}}">
+                <RibbonGroup Header="Frames">
+                    <RibbonButton Label="Add..." Command="{Binding AddFrameCommand}" />
+                    <RibbonButton Label="Remove" Command="{Binding RemoveFrameCommand}" CommandParameter="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
+                </RibbonGroup>
+            </RibbonTab>
+            <RibbonTab Header="Objects">
+
+            </RibbonTab>
+        </Ribbon>
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedEditorIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <TabItem Header="Story Board">
+                <ListView ItemsSource="{Binding Frames}" SelectedItem="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Image" Width="130">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Image Source="Resources/thumbnail.png" Width="120" Height="128" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name, TargetNullValue=Unnamed, UpdateSourceTrigger=PropertyChanged}" />
+                                <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"  />
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Level">
+                <Grid x:Name="glGrid">
+                    <glWpfControl:GLWpfControl x:Name="glControl" Cursor="{Binding Cursor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource cursorConverter}}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <local:GLControlServiceBehavior />
+                        </dxmvvm:Interaction.Behaviors>
+                    </glWpfControl:GLWpfControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Events">
+            </TabItem>
+        </TabControl>
+        
+        <StatusBar Grid.Row="2">
+            <StatusBarItem Content="Frame: " />
+            <StatusBarItem Content="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
+            <Separator />
+            <StatusBarItem Content="Position: " />
+            <StatusBarItem Content="-" />
+            <Separator />
+            <StatusBarItem Content="Size: " />
+            <StatusBarItem Content="-" />
+            <Separator />
+            <StatusBarItem Content="Object: " />
+            <StatusBarItem Content="-" />
+            <Separator />
+            <StatusBarItem Content="Size: " />
+            <StatusBarItem Content="{Binding Editor.Camera.Size, UpdateSourceTrigger=PropertyChanged}" />
+            <Separator />
+            <StatusBarItem Content="Zoom: " />
+            <StatusBarItem Content="{Binding Editor.Camera.Zoom, UpdateSourceTrigger=PropertyChanged}" />
+        </StatusBar>
+    </Grid>
+</Window>

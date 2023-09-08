@@ -10,6 +10,7 @@
         xmlns:converters="clr-namespace:MouseAndCreate.Editor.Converters"
         xmlns:behaviors="clr-namespace:MouseAndCreate.Editor.Behaviors"
         mc:Ignorable="d"
+        x:Name="mainWindow"
         Title="Mouse &amp; Create" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel, IsDesignTimeCreatable=False}">
     <Window.DataContext>
         <local:MainViewModel />
@@ -94,6 +95,15 @@
                                 </GridViewColumn>
                                 <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name, TargetNullValue=Unnamed, UpdateSourceTrigger=PropertyChanged}" />
                                 <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"  />
+                                <GridViewColumn Header="Actions" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="Edit" Command="{Binding DataContext.EditFrameCommand, ElementName=mainWindow}" CommandParameter="{Binding DataContext.ActiveFrame, ElementName=mainWindow}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

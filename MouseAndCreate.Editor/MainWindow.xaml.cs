@@ -1,4 +1,6 @@
-﻿using MouseAndCreate.Input;
+﻿using DevExpress.Mvvm;
+using MouseAndCreate.Editor.Services;
+using MouseAndCreate.Input;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
@@ -35,6 +37,10 @@ namespace MouseAndCreate.Editor
             InitializeComponent();
 
             _viewModel = DataContext as MainViewModel;
+
+            ISupportServices supportServices = _viewModel as ISupportServices;
+
+            supportServices.ServiceContainer.RegisterService(new WPFEditorDialogService(this));
 
             glControl.Ready += OnGlControlReady;
 

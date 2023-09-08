@@ -13,6 +13,7 @@ namespace MouseAndCreate.Frames
 
         IFrame GetFrameById(Guid id);
         bool ContainsFrame(Guid id);
+        bool ContainsFrame(string name);
 
         void ClearFrames();
     }

@@ -3,6 +3,7 @@ using MouseAndCreate.Play;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MouseAndCreate.Frames
 {
@@ -51,6 +52,9 @@ namespace MouseAndCreate.Frames
         public bool RemoveFrame(IFrame frame) => frame is not null && RemoveFrame(frame.Id);
 
         public bool ContainsFrame(Guid id) => _frameMap.ContainsKey(id);
+
+        public bool ContainsFrame(string name) => _framesList.Any(f => string.Equals(f.Name, name, StringComparison.InvariantCultureIgnoreCase));
+
         public IFrame GetFrameById(Guid id)
         {
             if (_frameMap.TryGetValue(id, out IFrame result))
@@ -69,5 +73,7 @@ namespace MouseAndCreate.Frames
             foreach (IFrame frame in frames)
                 frame.Dispose();
         }
+
+        
     }
 }

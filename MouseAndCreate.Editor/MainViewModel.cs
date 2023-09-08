@@ -35,6 +35,7 @@ public class MainViewModel : ViewModelBase, IWindowManager
 
     public DelegateCommand AddFrameCommand { get; }
     public DelegateCommand<FrameViewModel> RemoveFrameCommand { get; }
+    public DelegateCommand<FrameViewModel> EditFrameCommand { get; }
 
     public MainViewModel()
     {
@@ -51,6 +52,7 @@ public class MainViewModel : ViewModelBase, IWindowManager
 
         AddFrameCommand = new DelegateCommand(AddFrame);
         RemoveFrameCommand = new DelegateCommand<FrameViewModel>(RemoveFrame, CanRemoveFrame);
+        EditFrameCommand = new DelegateCommand<FrameViewModel>(EditFrame, CanEditFrame);
     }
 
     private void ActiveFrameChanged(FrameViewModel frame)
@@ -143,6 +145,13 @@ public class MainViewModel : ViewModelBase, IWindowManager
     {
         if (Editor.Frames.RemoveFrame(frame.Id))
             Frames.Remove(frame);
+    }
+
+    private bool CanEditFrame(FrameViewModel frame) => frame is not null && Frames.Contains(frame);
+    private void EditFrame(FrameViewModel frame)
+    {
+        var srv = GetService<IEditorDialogService>();
+        srv.ShowEditFrame(Editor.Frames, frame);
     }
 
     private void OnWindowUnloaded()

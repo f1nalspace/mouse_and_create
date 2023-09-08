@@ -23,10 +23,10 @@ namespace MouseAndCreate.Frames
         public IFrame CurrentFrame { get => _currentFrame; set => _currentFrame = value; }
         private IFrame _currentFrame = null;
 
-        public IFrame AddFrame()
+        public IFrame AddFrame(string name = null)
         {
             Guid id = Guid.NewGuid();
-            IFrame result = new Frame(new FrameSetup(_game.Setup), id);
+            IFrame result = new Frame(new FrameSetup(_game.Setup), id, name);
             lock (_listLock)
             {
                 _frameMap.TryAdd(result.Id, result);

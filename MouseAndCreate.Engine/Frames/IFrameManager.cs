@@ -7,7 +7,7 @@ namespace MouseAndCreate.Frames
     {
         IReadOnlyCollection<IFrame> Frames { get; }
 
-        IFrame AddFrame();
+        IFrame AddFrame(string name = null);
         bool RemoveFrame(IFrame frame);
         bool RemoveFrame(Guid id);
 

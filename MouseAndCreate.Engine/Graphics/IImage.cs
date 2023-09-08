@@ -1,5 +1,4 @@
-﻿using MouseAndCreate.Rendering;
-using System;
+﻿using System;
 
 namespace MouseAndCreate.Graphics
 {
@@ -9,6 +8,7 @@ namespace MouseAndCreate.Graphics
         string Name { get; set; }
         int Width { get; }
         int Height { get; }
+        int Components { get; }
         ImageFormat Format { get; }
         ReadOnlySpan<byte> Data { get; }
     }

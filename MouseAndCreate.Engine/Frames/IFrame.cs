@@ -1,4 +1,5 @@
 ﻿using MouseAndCreate.Configurations;
+using MouseAndCreate.Graphics;
 using MouseAndCreate.Objects;
 using System;
 using System.ComponentModel;
@@ -11,5 +12,6 @@ namespace MouseAndCreate.Frames
         string Name { get; set; }
         FrameSetup Setup { get; }
         IGameObjectManager ObjectMng { get; }
+        IImage Image { get; }
     }
 }

@@ -12,6 +12,7 @@ namespace MouseAndCreate.Graphics
         public string Name { get; set; }
         public Vector2i Size { get; private set; }
         public int Length => Size.X * Size.Y * 4;
+        public int Components => 4;
 
         public int Width => Size.X;
         public int Height => Size.Y;

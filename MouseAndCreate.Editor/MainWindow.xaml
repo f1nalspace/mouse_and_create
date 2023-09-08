@@ -81,7 +81,7 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
-                                                <Image Source="Resources/thumbnail.png" Width="120" Height="128" />
+                                                <Image Source="{Binding Image}" Width="120" Height="128" />
                                             </Grid>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>

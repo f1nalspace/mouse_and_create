@@ -130,7 +130,9 @@ public class MainViewModel : ViewModelBase, IWindowManager
 
     private void AddFrame()
     {
-        IFrame frame = Editor.Frames.AddFrame();
+        int frameCount = Editor.Frames.Frames.Count;
+        string name = $"Frame-{++frameCount}";
+        IFrame frame = Editor.Frames.AddFrame(name);
         FrameViewModel frameViewModel = new FrameViewModel(frame);
         Frames.Add(frameViewModel);
         ActiveFrame = frameViewModel;

@@ -77,6 +77,9 @@
         <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedEditorIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
             <TabItem Header="Story Board">
                 <ListView ItemsSource="{Binding Frames}" SelectedItem="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding ShowLevelEditorCommand}" CommandParameter="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
+                    </dxmvvm:Interaction.Behaviors>
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>

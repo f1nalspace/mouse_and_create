@@ -7,6 +7,8 @@
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:MouseAndCreate.Editor"
+        xmlns:converters="clr-namespace:MouseAndCreate.Editor.Converters"
+        xmlns:behaviors="clr-namespace:MouseAndCreate.Editor.Behaviors"
         mc:Ignorable="d"
         Title="Mouse &amp; Create" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel, IsDesignTimeCreatable=False}">
     <Window.DataContext>
@@ -16,9 +18,10 @@
         <system:Int32 x:Key="storyBoardEditorIndex">0</system:Int32>
         <system:Int32 x:Key="levelEditorIndex">1</system:Int32>
         <system:Int32 x:Key="eventEditorIndex">2</system:Int32>
-        <local:IsIntegerConverter x:Key="invertedIsIntegerConverter" Invert="True" />
-        <local:SizeEventArgsConverter x:Key="sizeEventArgsConverter" />
-        <local:CursorConverter x:Key="cursorConverter" />
+
+        <converters:IsIntegerConverter x:Key="invertedIsIntegerConverter" Invert="True" />
+        <converters:SizeEventArgsConverter x:Key="sizeEventArgsConverter" />
+        <converters:CursorConverter x:Key="cursorConverter" />
     </Window.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnWindowLoadedCommand}" />
@@ -61,7 +64,7 @@
             <RibbonTab Header="Edit">
                 
             </RibbonTab>
-            <RibbonTab Header="Story Board" Visibility="{Binding SelectedEditorIndex, UpdateSourceTrigger=PropertyChanged, Converter={local:IsIntegerConverter}, ConverterParameter={StaticResource storyBoardEditorIndex}}">
+            <RibbonTab Header="Story Board" Visibility="{Binding SelectedEditorIndex, UpdateSourceTrigger=PropertyChanged, Converter={converters:IsIntegerConverter}, ConverterParameter={StaticResource storyBoardEditorIndex}}">
                 <RibbonGroup Header="Frames">
                     <RibbonButton Label="Add..." Command="{Binding AddFrameCommand}" />
                     <RibbonButton Label="Remove" Command="{Binding RemoveFrameCommand}" CommandParameter="{Binding ActiveFrame, UpdateSourceTrigger=PropertyChanged}" />
@@ -97,7 +100,7 @@
                 <Grid x:Name="glGrid">
                     <glWpfControl:GLWpfControl x:Name="glControl" Cursor="{Binding Cursor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource cursorConverter}}">
                         <dxmvvm:Interaction.Behaviors>
-                            <local:GLControlServiceBehavior />
+                            <behaviors:GLControlServiceBehavior />
                         </dxmvvm:Interaction.Behaviors>
                     </glWpfControl:GLWpfControl>
                 </Grid>

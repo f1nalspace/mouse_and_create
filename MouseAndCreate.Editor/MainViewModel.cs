@@ -1,4 +1,5 @@
 ﻿using DevExpress.Mvvm;
+using MouseAndCreate.Editor.Services;
 using MouseAndCreate.Frames;
 using MouseAndCreate.Input;
 using MouseAndCreate.Platform;

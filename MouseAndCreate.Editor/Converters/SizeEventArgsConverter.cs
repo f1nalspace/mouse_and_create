@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MouseAndCreate.Editor;
+namespace MouseAndCreate.Editor.Converters;
 
 public class SizeEventArgsConverter : IEventArgsConverter
 {

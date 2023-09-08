@@ -11,7 +11,11 @@ namespace MouseAndCreate.Editor
         private readonly IFrame _frame;
 
         public Guid Id => _frame.Id;
-        public string Name => _frame.Name;
+        public string Name
+        {
+            get => _frame.Name;
+            set => _frame.Name = value;
+        }
 
         public ImageSource Image { get => GetValue<ImageSource>(); set => SetValue(value); }
 
@@ -35,5 +39,7 @@ namespace MouseAndCreate.Editor
                     break;
             }
         }
+
+        public override string ToString() => _frame.ToString();
     }
 }
